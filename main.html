@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campus Vesak Zone 2026 🪔</title>
+<style>
+  /* ===== FONTS & RESET ===== */
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Sinhala:wght@400;700&family=Cinzel+Decorative:wght@400;700&family=Lato:wght@300;400;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --night-bg: #040d1a;
+    --road-color: #1a2540;
+    --road-border: #2a3a60;
+    --building-fill: #0d1f3c;
+    --building-stroke: #1e3a6e;
+    --gold: #f5c842;
+    --amber: #ffb347;
+    --vesak-pink: #ff6eb4;
+    --vesak-blue: #4fc3f7;
+    --vesak-green: #69f0ae;
+    --vesak-purple: #ce93d8;
+    --glow-gold: rgba(245,200,66,0.7);
+    --glow-pink: rgba(255,110,180,0.5);
+    --poi-pulse: rgba(255,200,50,0.3);
+    --map-w: 900px;
+    --map-h: 700px;
+  }
+
+  body {
+    background: var(--night-bg);
+    font-family: 'Lato', sans-serif;
+    color: #e0e8ff;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ===== STARS BACKGROUND ===== */
+  .stars-layer {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background: radial-gradient(ellipse at 50% 20%, #0a1628 0%, #020810 100%);
+    overflow: hidden;
+  }
+  .stars-layer::before, .stars-layer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.8) 0%, transparent 100%),
+      radial-gradient(1px 1px at 25% 35%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 40% 10%, rgba(255,255,255,0.9) 0%, transparent 100%),
+      radial-gradient(1px 1px at 55% 25%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 8%,  rgba(255,255,255,0.7) 0%, transparent 100%),
+      radial-gradient(1px 1px at 85% 18%, rgba(255,255,255,0.8) 0%, transparent 100%),
+      radial-gradient(1px 1px at 15% 50%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 30% 60%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 60% 55%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 80% 45%, rgba(255,255,255,0.7) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 70%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 5%  80%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 45% 75%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 65% 85%, rgba(255,255,255,0.8) 0%, transparent 100%),
+      radial-gradient(1px 1px at 20% 90%, rgba(255,255,255,0.6) 0%, transparent 100%);
+    animation: twinkle 4s infinite alternate;
+  }
+  .stars-layer::after {
+    background-image:
+      radial-gradient(1px 1px at 18% 22%, rgba(200,230,255,0.7) 0%, transparent 100%),
+      radial-gradient(1px 1px at 38% 42%, rgba(200,230,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 58% 12%, rgba(200,230,255,0.8) 0%, transparent 100%),
+      radial-gradient(1px 1px at 78% 32%, rgba(200,230,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 48% 62%, rgba(200,230,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 88% 52%, rgba(200,230,255,0.7) 0%, transparent 100%),
+      radial-gradient(1px 1px at 8%  42%, rgba(200,230,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 28% 72%, rgba(200,230,255,0.8) 0%, transparent 100%),
+      radial-gradient(1px 1px at 68% 68%, rgba(200,230,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 92% 88%, rgba(200,230,255,0.4) 0%, transparent 100%);
+    animation: twinkle 6s infinite alternate-reverse;
+  }
+  @keyframes twinkle {
+    0%   { opacity: 0.4; }
+    100% { opacity: 1; }
+  }
+
+  /* ===== HEADER ===== */
+  .header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    text-align: center;
+    padding: 10px 20px 8px;
+    background: linear-gradient(to bottom, rgba(4,13,26,0.98) 70%, transparent);
+  }
+  .header h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.4rem;
+    color: var(--gold);
+    text-shadow: 0 0 20px var(--glow-gold), 0 0 40px rgba(245,200,66,0.3);
+    letter-spacing: 2px;
+  }
+  .header p {
+    font-size: 0.72rem;
+    color: #8aabcc;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  /* ===== CONTROLS HINT ===== */
+  .controls-hint {
+    position: fixed;
+    bottom: 14px; left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    background: rgba(10,20,50,0.85);
+    border: 1px solid rgba(100,150,255,0.2);
+    border-radius: 40px;
+    padding: 7px 18px;
+    font-size: 0.72rem;
+    color: #8aabcc;
+    letter-spacing: 1px;
+    backdrop-filter: blur(8px);
+  }
+  .key {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 5px;
+    font-size: 0.65rem;
+    color: #c0d4ee;
+  }
+
+  /* ===== MAP WRAPPER ===== */
+  #map-wrap {
+    position: relative;
+    z-index: 10;
+    width: var(--map-w);
+    height: var(--map-h);
+    margin-top: 60px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(100,160,255,0.15);
+    box-shadow: 0 0 60px rgba(0,80,200,0.15), 0 0 120px rgba(245,200,66,0.05);
+  }
+
+  /* ===== CANVAS ===== */
+  #map-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ===== CHARACTER ===== */
+  #character {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    transform: translate(-50%, -50%);
+    z-index: 30;
+    pointer-events: none;
+    transition: left 0.06s linear, top 0.06s linear;
+  }
+  #character::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,220,80,0.35) 0%, transparent 70%);
+    animation: char-glow 1.5s ease-in-out infinite alternate;
+  }
+  @keyframes char-glow {
+    from { opacity: 0.6; transform: scale(0.9); }
+    to   { opacity: 1;   transform: scale(1.15); }
+  }
+  #character svg { width: 28px; height: 28px; }
+
+  /* ===== STREET LIGHTS ===== */
+  .street-light {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    z-index: 20;
+    pointer-events: none;
+  }
+  .street-light.gold {
+    background: var(--gold);
+    box-shadow: 0 0 8px 4px rgba(245,200,66,0.6), 0 0 20px 10px rgba(245,200,66,0.2);
+    animation: light-flicker 3s ease-in-out infinite;
+  }
+  .street-light.blue {
+    background: var(--vesak-blue);
+    box-shadow: 0 0 8px 4px rgba(79,195,247,0.6), 0 0 20px 10px rgba(79,195,247,0.2);
+    animation: light-flicker 4s ease-in-out infinite reverse;
+  }
+  @keyframes light-flicker {
+    0%,100% { opacity: 1; }
+    50%      { opacity: 0.7; }
+  }
+
+  /* ===== VESAK LANTERNS ===== */
+  .lantern {
+    position: absolute;
+    z-index: 22;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    animation: lantern-sway 4s ease-in-out infinite;
+  }
+  .lantern:nth-child(even) { animation-direction: reverse; }
+  @keyframes lantern-sway {
+    0%,100% { transform: translate(-50%,-50%) rotate(-6deg); }
+    50%      { transform: translate(-50%,-50%) rotate(6deg); }
+  }
+  .lantern svg { width: 22px; height: 28px; }
+
+  /* ===== OIL LAMPS ===== */
+  .pahan {
+    position: absolute;
+    z-index: 21;
+    width: 8px; height: 8px;
+    border-radius: 50% 50% 40% 40%;
+    background: radial-gradient(circle at 50% 60%, #fff5b0, #f5a623);
+    box-shadow: 0 0 6px 3px rgba(255,170,60,0.7), 0 0 14px 8px rgba(255,150,30,0.3);
+    pointer-events: none;
+    animation: pahan-flicker 1.8s ease-in-out infinite;
+  }
+  .pahan:nth-child(2n) { animation-delay: 0.6s; }
+  .pahan:nth-child(3n) { animation-delay: 1.2s; }
+  @keyframes pahan-flicker {
+    0%,100% { opacity: 1; box-shadow: 0 0 6px 3px rgba(255,170,60,0.7), 0 0 14px 8px rgba(255,150,30,0.3); }
+    40%      { opacity: 0.6; box-shadow: 0 0 3px 2px rgba(255,170,60,0.4), 0 0 8px 4px rgba(255,150,30,0.2); }
+    70%      { opacity: 0.9; }
+  }
+
+  /* ===== POI MARKERS ===== */
+  .poi-marker {
+    position: absolute;
+    z-index: 25;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    width: 36px; height: 36px;
+  }
+  .poi-marker .poi-inner {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    animation: poi-pulse 2.5s ease-out infinite;
+    position: relative;
+  }
+  .poi-marker:hover .poi-inner { transform: scale(1.2); }
+  @keyframes poi-pulse {
+    0%   { box-shadow: 0 0 0 0 var(--poi-pulse); }
+    70%  { box-shadow: 0 0 0 16px rgba(255,200,50,0); }
+    100% { box-shadow: 0 0 0 0 rgba(255,200,50,0); }
+  }
+  .poi-marker .poi-label {
+    position: absolute;
+    bottom: 100%; left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-size: 0.6rem;
+    background: rgba(5,15,40,0.9);
+    color: var(--gold);
+    border: 1px solid rgba(245,200,66,0.3);
+    border-radius: 20px;
+    padding: 2px 8px;
+    margin-bottom: 6px;
+    pointer-events: none;
+    letter-spacing: 0.5px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .poi-marker:hover .poi-label { opacity: 1; }
+
+  /* ===== BUILDING LABELS ===== */
+  .bld-label {
+    position: absolute;
+    z-index: 20;
+    pointer-events: none;
+    font-size: 0.58rem;
+    font-family: 'Lato', sans-serif;
+    font-weight: 700;
+    color: rgba(160,200,255,0.75);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    line-height: 1.3;
+  }
+
+  /* ===== MODAL ===== */
+  #modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(2,8,20,0.85);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  #modal-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+  #modal-box {
+    background: linear-gradient(145deg, #091428 0%, #0d1f40 100%);
+    border: 1px solid rgba(245,200,66,0.35);
+    border-radius: 18px;
+    width: min(480px, 92vw);
+    overflow: hidden;
+    box-shadow: 0 0 60px rgba(245,200,66,0.15), 0 30px 80px rgba(0,0,0,0.7);
+    transform: scale(0.9) translateY(20px);
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  #modal-overlay.active #modal-box {
+    transform: scale(1) translateY(0);
+  }
+  #modal-img-wrap {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(135deg, #0a1e40, #1a0a30);
+  }
+  #modal-img-wrap img {
+    width: 100%; height: 100%; object-fit: cover;
+    opacity: 0.85;
+  }
+  #modal-img-wrap .img-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 40%, #091428 100%);
+  }
+  #modal-img-wrap .img-emoji {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 5rem;
+    filter: drop-shadow(0 0 20px rgba(255,200,50,0.6));
+    animation: poi-float 3s ease-in-out infinite;
+  }
+  @keyframes poi-float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  .modal-body { padding: 20px 26px 26px; }
+  .modal-tag {
+    display: inline-block;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--vesak-pink);
+    border: 1px solid rgba(255,110,180,0.35);
+    border-radius: 20px;
+    padding: 3px 10px;
+    margin-bottom: 8px;
+  }
+  #modal-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.15rem;
+    color: var(--gold);
+    text-shadow: 0 0 15px rgba(245,200,66,0.4);
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+  #modal-desc {
+    font-size: 0.85rem;
+    line-height: 1.7;
+    color: #a8c0df;
+    margin-bottom: 18px;
+  }
+  .modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .modal-footer .festival-badge {
+    font-size: 0.65rem;
+    color: #5a7a9a;
+    letter-spacing: 1px;
+  }
+  #modal-close {
+    background: linear-gradient(135deg, #f5c842, #e6952a);
+    color: #050d1a;
+    border: none;
+    border-radius: 30px;
+    padding: 9px 24px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    text-transform: uppercase;
+    box-shadow: 0 4px 20px rgba(245,200,66,0.35);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  #modal-close:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 28px rgba(245,200,66,0.55);
+  }
+
+  /* ===== MOBILE DPAD ===== */
+  #dpad {
+    position: fixed;
+    bottom: 50px; right: 20px;
+    z-index: 100;
+    display: none;
+  }
+  @media (max-width: 800px) {
+    #dpad { display: grid; }
+    body { overflow: auto; }
+    #map-wrap { width: 100vw; height: 60vh; margin-top: 55px; border-radius: 0; }
+    :root { --map-w: 100vw; --map-h: 60vh; }
+  }
+  .dpad-grid {
+    display: grid;
+    grid-template-areas: '. up .' 'left . right' '. down .';
+    grid-template-columns: 44px 44px 44px;
+    grid-template-rows: 44px 44px 44px;
+    gap: 4px;
+  }
+  .dpad-btn {
+    background: rgba(20,40,80,0.85);
+    border: 1px solid rgba(100,150,255,0.3);
+    border-radius: 8px;
+    color: var(--gold);
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+    user-select: none;
+    touch-action: none;
+  }
+  .dpad-btn:active { background: rgba(40,80,160,0.9); }
+  .dpad-up    { grid-area: up; }
+  .dpad-left  { grid-area: left; }
+  .dpad-right { grid-area: right; }
+  .dpad-down  { grid-area: down; }
+
+  /* ===== SCROLLING TICKER ===== */
+  .ticker {
+    position: fixed;
+    top: 62px; left: 0; right: 0;
+    z-index: 90;
+    height: 24px;
+    overflow: hidden;
+    background: rgba(4,13,26,0.6);
+    border-bottom: 1px solid rgba(245,200,66,0.08);
+    display: flex;
+    align-items: center;
+  }
+  .ticker-inner {
+    white-space: nowrap;
+    font-size: 0.65rem;
+    color: rgba(245,200,66,0.6);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    animation: ticker-scroll 20s linear infinite;
+    padding-left: 100%;
+  }
+  @keyframes ticker-scroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-100%); }
+  }
+</style>
+</head>
+<body>
+
+<!-- Stars -->
+<div class="stars-layer"></div>
+
+<!-- Header -->
+<header class="header">
+  <h1>🪔 Campus Vesak Zone 2026 🪔</h1>
+  <p>Interactive Night Map &nbsp;·&nbsp; Explore the Festival</p>
+</header>
+
+<!-- Ticker -->
+<div class="ticker">
+  <div class="ticker-inner">
+    🌸 Welcome to the Vesak Festival &nbsp;·&nbsp; 🕯️ Light a lamp of peace &nbsp;·&nbsp; 🏮 Explore the pandols and dansalas &nbsp;·&nbsp; 🙏 Sadu! Sadu! Sadu! &nbsp;·&nbsp; 🌟 Walk the path of the Dhamma &nbsp;·&nbsp; 🌸 Welcome to the Vesak Festival &nbsp;·&nbsp;
+  </div>
+</div>
+
+<!-- Map -->
+<div id="map-wrap">
+  <canvas id="map-canvas"></canvas>
+
+  <!-- Character -->
+  <div id="character">
+    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- glow ring -->
+      <circle cx="14" cy="14" r="12" fill="rgba(255,220,80,0.12)" stroke="rgba(255,220,80,0.4)" stroke-width="1"/>
+      <!-- body -->
+      <circle cx="14" cy="9" r="4" fill="#f5c842" stroke="#fff9c4" stroke-width="0.8"/>
+      <rect x="10" y="14" width="8" height="7" rx="3" fill="#4fc3f7" stroke="#b3e5fc" stroke-width="0.5"/>
+      <!-- legs -->
+      <line x1="12" y1="21" x2="11" y2="26" stroke="#4fc3f7" stroke-width="1.8" stroke-linecap="round"/>
+      <line x1="16" y1="21" x2="17" y2="26" stroke="#4fc3f7" stroke-width="1.8" stroke-linecap="round"/>
+      <!-- arms -->
+      <line x1="10" y1="16" x2="7"  y2="19" stroke="#4fc3f7" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="18" y1="16" x2="21" y2="19" stroke="#4fc3f7" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+  </div>
+
+  <!-- POI markers (injected by JS) -->
+</div>
+
+<!-- Controls hint -->
+<div class="controls-hint">
+  <span class="key">▲</span>
+  <span class="key">◀</span>
+  <span class="key">▼</span>
+  <span class="key">▶</span>
+  &nbsp; Move &nbsp;·&nbsp; Click glowing markers to explore
+</div>
+
+<!-- D-Pad for mobile -->
+<div id="dpad">
+  <div class="dpad-grid">
+    <button class="dpad-btn dpad-up"    data-dir="up">▲</button>
+    <button class="dpad-btn dpad-left"  data-dir="left">◀</button>
+    <button class="dpad-btn dpad-right" data-dir="right">▶</button>
+    <button class="dpad-btn dpad-down"  data-dir="down">▼</button>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="modal-overlay">
+  <div id="modal-box">
+    <div id="modal-img-wrap">
+      <img id="modal-img" src="" alt="">
+      <div class="img-overlay"></div>
+      <div class="img-emoji" id="modal-emoji"></div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-tag" id="modal-tag">Special Point</div>
+      <h2 id="modal-title">Title</h2>
+      <p id="modal-desc">Description</p>
+      <div class="modal-footer">
+        <span class="festival-badge">🕯️ Vesak 2026</span>
+        <button id="modal-close">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+//  MAP CONFIGURATION  — edit this section freely!
+// ============================================================
+const MAP_W = 900;
+const MAP_H = 700;
+
+// Road/path polygons: each is an array of [x,y] segments (drawn as filled rectangles)
+// Format: { x, y, w, h, type: 'h'|'v'|'d' }
+const ROADS = [
+  // Main vertical road (left spine — Mansiylen)
+  { x: 80, y: 0, w: 40, h: MAP_H },
+  // Main horizontal road (top entry)
+  { x: 80, y: 70, w: MAP_W - 80, h: 36 },
+  // Central vertical road (middle)
+  { x: 390, y: 70, w: 36, h: MAP_H - 70 },
+  // Right vertical road (Applied side)
+  { x: 760, y: 70, w: 36, h: MAP_H - 70 },
+  // Bottom horizontal road (entry area)
+  { x: 80, y: MAP_H - 50, w: 700, h: 36 },
+  // Small diagonal suggestion — connecting junction area
+  { x: 200, y: 500, w: 36, h: 200, skew: true },
+];
+
+// Buildings: { x, y, w, h, label, color }
+const BUILDINGS = [
+  { x: 120, y: 106, w: 250, h: 100, label: "KASE", color: "#0e2244" },
+  { x: 120, y: 220, w: 250, h: 90,  label: "Open Canteen", color: "#0a1e30" },
+  { x: 120, y: 324, w: 250, h: 100, label: "Temple", color: "#1a0e2e" },
+  { x: 430, y: 106, w: 300, h: 170, label: "Faculty of\nComputing", color: "#0e2033" },
+  { x: 430, y: 380, w: 300, h: 250, label: "Sumansala\nHall", color: "#0d1e35" },
+  // Faculty of Post Grad (top-left, above road)
+  { x: 0,   y: 0,   w: 76, h: 66,  label: "Post\nGrad", color: "#0a1828" },
+];
+
+// Points of Interest
+const POIS = [
+  {
+    id: "pandol",
+    x: 260, y: 180,
+    emoji: "🏮",
+    color: "#f5c842",
+    label: "Main Vesak Pandol",
+    tag: "Thorana / Pandol",
+    title: "Main Vesak Pandol",
+    desc: "The magnificent Main Vesak Pandol stands at the heart of the campus, depicting the sacred Jataka tales through thousands of glowing LED lights. A breathtaking tribute to the Buddha's enlightenment, crafted by students and staff.",
+    img: "", // replace with actual image URL
+    imgEmoji: "🏮",
+  },
+  {
+    id: "dansala",
+    x: 260, y: 278,
+    emoji: "🍚",
+    color: "#69f0ae",
+    label: "Dansala",
+    tag: "Dana / Charity",
+    title: "Vesak Dansala",
+    desc: "A spirit of generosity fills the Open Canteen area as the Vesak Dansala serves free traditional Sri Lankan meals — kiribath, milk rice, fruit, and herbal drinks — to all visitors, embodying the Buddhist value of Dāna (giving).",
+    img: "",
+    imgEmoji: "🍚",
+  },
+  {
+    id: "lanterns",
+    x: 490, y: 160,
+    emoji: "🪔",
+    color: "#ce93d8",
+    label: "Lantern Exhibition",
+    tag: "Vesak Koodu",
+    title: "Lantern Exhibition Hall",
+    desc: "Students from the Faculty of Computing have crafted stunning handmade Vesak lanterns of every shape — stars, lotus flowers, dharma wheels, and more. Walk through the corridor of light and marvel at the creativity and devotion on display.",
+    img: "",
+    imgEmoji: "🪔",
+  },
+  {
+    id: "shramadana",
+    x: 490, y: 490,
+    emoji: "🤝",
+    color: "#4fc3f7",
+    label: "Shramadana Zone",
+    tag: "Community Work",
+    title: "Shramadana Area",
+    desc: "The Shramadana (voluntary community work) zone in Sumansala grounds brings the campus together. Planting Bodhi saplings, cleaning pathways, and painting Vesak decorations — united in the spirit of selfless service.",
+    img: "",
+    imgEmoji: "🤝",
+  },
+  {
+    id: "temple",
+    x: 245, y: 374,
+    emoji: "🙏",
+    color: "#ff6eb4",
+    label: "Campus Temple",
+    tag: "Sacred Space",
+    title: "Campus Temple",
+    desc: "The serene campus temple is adorned with jasmine garlands and hundreds of flickering oil lamps (pahan). A peaceful sanctuary for prayer and meditation during the Vesak full moon night.",
+    img: "",
+    imgEmoji: "🙏",
+  },
+];
+
+// Street lights: [x, y, type ('gold'|'blue')]
+const STREET_LIGHTS = [
+  [100, 90, 'gold'], [100, 180, 'gold'], [100, 270, 'gold'], [100, 360, 'gold'], [100, 450, 'gold'], [100, 560, 'gold'],
+  [200, 90, 'blue'], [300, 90, 'blue'], [400, 90, 'blue'], [500, 90, 'blue'], [600, 90, 'blue'], [700, 90, 'blue'],
+  [410, 180, 'gold'], [410, 280, 'gold'], [410, 380, 'gold'], [410, 480, 'gold'], [410, 580, 'gold'],
+  [780, 180, 'blue'], [780, 280, 'blue'], [780, 380, 'blue'], [780, 480, 'blue'],
+];
+
+// Lanterns: [x, y, color]
+const LANTERNS = [
+  [155, 85, '#f5c842'], [175, 85, '#ff6eb4'], [215, 85, '#69f0ae'], [235, 85, '#ce93d8'],
+  [275, 85, '#4fc3f7'], [315, 85, '#f5c842'], [355, 85, '#ff6eb4'],
+  [455, 85, '#69f0ae'], [475, 85, '#ce93d8'], [515, 85, '#4fc3f7'],
+  [555, 85, '#f5c842'], [595, 85, '#ff6eb4'], [635, 85, '#69f0ae'],
+  [680, 85, '#ce93d8'], [720, 85, '#4fc3f7'],
+  [100, 150, '#f5c842'], [100, 230, '#ff6eb4'], [100, 310, '#69f0ae'],
+  [100, 395, '#ce93d8'], [100, 475, '#4fc3f7'], [100, 555, '#f5c842'],
+];
+
+// Oil lamps (pahan) [x, y]
+const PAHANS = [
+  [140, 105], [160, 105], [180, 105], [200, 105], [220, 105],
+  [140, 216], [160, 216], [180, 216], [200, 216],
+  [140, 320], [160, 320], [180, 320], [200, 320],
+  [435, 105], [455, 105], [475, 105], [495, 105], [515, 105],
+  [435, 276], [455, 276], [475, 276],
+  [435, 376], [455, 376], [475, 376],
+  [200, 650], [240, 650], [280, 650], [320, 650], [360, 650],
+  [430, 650], [470, 650], [510, 650], [550, 650],
+];
+
+// Building labels positions
+const BLDLABELS = [
+  { x: 245, y: 156, text: "KASE" },
+  { x: 245, y: 265, text: "Open\nCanteen" },
+  { x: 245, y: 374, text: "Temple" },
+  { x: 580, y: 191, text: "Faculty of\nComputing" },
+  { x: 580, y: 505, text: "Sumansala" },
+  { x: 40,  y: 33,  text: "Post\nGrad" },
+];
+
+// ============================================================
+//  DRAW MAP ON CANVAS
+// ============================================================
+const canvas = document.getElementById('map-canvas');
+const ctx = canvas.getContext('2d');
+canvas.width = MAP_W;
+canvas.height = MAP_H;
+
+function hexToRgba(hex, a) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+function drawMap() {
+  // Background
+  const bg = ctx.createLinearGradient(0, 0, MAP_W, MAP_H);
+  bg.addColorStop(0, '#050f20');
+  bg.addColorStop(1, '#040c18');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, MAP_W, MAP_H);
+
+  // Subtle grid
+  ctx.strokeStyle = 'rgba(30,60,100,0.18)';
+  ctx.lineWidth = 1;
+  for (let x = 0; x < MAP_W; x += 40) {
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, MAP_H); ctx.stroke();
+  }
+  for (let y = 0; y < MAP_H; y += 40) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(MAP_W, y); ctx.stroke();
+  }
+
+  // Roads (glow)
+  ROADS.forEach(r => {
+    // Outer glow
+    ctx.fillStyle = 'rgba(30,60,120,0.18)';
+    ctx.fillRect(r.x - 8, r.y - 8, r.w + 16, r.h + 16);
+    // Road fill
+    ctx.fillStyle = '#1a2a4a';
+    ctx.fillRect(r.x, r.y, r.w, r.h);
+    // Road edge lines
+    ctx.strokeStyle = 'rgba(80,130,220,0.25)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(r.x, r.y, r.w, r.h);
+    // Dashed center line for wide roads
+    if (r.w > 100 || r.h > 100) {
+      ctx.setLineDash([12, 10]);
+      ctx.strokeStyle = 'rgba(245,200,66,0.12)';
+      ctx.lineWidth = 1.5;
+      if (r.w > r.h) {
+        const cy = r.y + r.h / 2;
+        ctx.beginPath(); ctx.moveTo(r.x, cy); ctx.lineTo(r.x + r.w, cy); ctx.stroke();
+      } else {
+        const cx = r.x + r.w / 2;
+        ctx.beginPath(); ctx.moveTo(cx, r.y); ctx.lineTo(cx, r.y + r.h); ctx.stroke();
+      }
+      ctx.setLineDash([]);
+    }
+  });
+
+  // Buildings
+  BUILDINGS.forEach(b => {
+    // Shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.4)';
+    ctx.fillRect(b.x + 4, b.y + 4, b.w, b.h);
+    // Fill
+    const grad = ctx.createLinearGradient(b.x, b.y, b.x + b.w, b.y + b.h);
+    grad.addColorStop(0, b.color);
+    grad.addColorStop(1, hexToRgba(b.color, 0.7));
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.roundRect(b.x, b.y, b.w, b.h, 6);
+    ctx.fill();
+    // Border
+    ctx.strokeStyle = 'rgba(60,120,210,0.35)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.roundRect(b.x, b.y, b.w, b.h, 6);
+    ctx.stroke();
+    // Window dots
+    ctx.fillStyle = 'rgba(150,210,255,0.15)';
+    for (let wx = b.x + 14; wx < b.x + b.w - 10; wx += 20) {
+      for (let wy = b.y + 14; wy < b.y + b.h - 10; wy += 20) {
+        ctx.fillRect(wx, wy, 8, 5);
+      }
+    }
+  });
+
+  // Diagonal road hint (sketch element)
+  ctx.strokeStyle = 'rgba(50,100,180,0.3)';
+  ctx.lineWidth = 28;
+  ctx.lineCap = 'round';
+  ctx.setLineDash([20, 8]);
+  ctx.beginPath();
+  ctx.moveTo(200, 660);
+  ctx.lineTo(390, 560);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.lineWidth = 1;
+
+  // Labels on canvas
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font = 'bold 11px Lato, sans-serif';
+  ctx.fillStyle = 'rgba(160,200,255,0.55)';
+
+  // Side labels (rotated)
+  const sideLabels = [
+    { text: "MANSIYLEN", x: 58, y: 350, angle: -Math.PI/2 },
+    { text: "LIBRARY", x: 58, y: 520, angle: -Math.PI/2 },
+    { text: "APPLIED →", x: 860, y: 350, angle: -Math.PI/2 },
+  ];
+  sideLabels.forEach(sl => {
+    ctx.save();
+    ctx.translate(sl.x, sl.y);
+    ctx.rotate(sl.angle);
+    ctx.fillStyle = 'rgba(140,180,240,0.5)';
+    ctx.font = 'bold 10px Lato';
+    ctx.fillText(sl.text, 0, 0);
+    ctx.restore();
+  });
+
+  // Top labels (above road)
+  const topLabels = [
+    { text: "Post Grad", x: 40, y: 40 },
+    { text: "Faculty of Computing", x: 300, y: 40 },
+    { text: "Faculty of Humanity", x: 500, y: 40 },
+    { text: "Reshels Canteen", x: 730, y: 40 },
+  ];
+  ctx.font = '10px Lato';
+  topLabels.forEach(tl => {
+    ctx.fillStyle = 'rgba(180,210,255,0.45)';
+    ctx.fillText(tl.text, tl.x, tl.y);
+    // dot
+    ctx.fillStyle = 'rgba(245,200,66,0.5)';
+    ctx.beginPath();
+    ctx.arc(tl.x, tl.y + 14, 3, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // Entry labels
+  ctx.font = 'bold 10px Lato';
+  ctx.fillStyle = 'rgba(160,200,255,0.5)';
+  ctx.fillText("Main Entrance", 340, 685);
+  ctx.fillText("Entrance 2", 170, 685);
+  ctx.fillText("Junction", 395, 560);
+
+  // Entrance arrows
+  ctx.fillStyle = 'rgba(245,200,66,0.4)';
+  ctx.font = '18px sans-serif';
+  ctx.fillText("↑", 340, 670);
+  ctx.fillText("↑", 170, 670);
+}
+
+// ============================================================
+//  INJECT DOM DECORATIONS
+// ============================================================
+const mapWrap = document.getElementById('map-wrap');
+
+function pct(val, total) { return (val / total * 100).toFixed(3) + '%'; }
+
+// Street lights
+STREET_LIGHTS.forEach(([x, y, type]) => {
+  const el = document.createElement('div');
+  el.className = `street-light ${type}`;
+  el.style.left = pct(x, MAP_W);
+  el.style.top  = pct(y, MAP_H);
+  mapWrap.appendChild(el);
+});
+
+// Lanterns
+LANTERNS.forEach(([x, y, color]) => {
+  const el = document.createElement('div');
+  el.className = 'lantern';
+  el.style.left = pct(x, MAP_W);
+  el.style.top  = pct(y, MAP_H);
+  el.innerHTML = `
+    <svg viewBox="0 0 22 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="11" y1="0" x2="11" y2="5" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+      <ellipse cx="11" cy="7" rx="5" ry="2.5" fill="${color}" opacity="0.9"/>
+      <path d="M6 7 Q4 15 6 21 Q11 24 16 21 Q18 15 16 7Z" fill="${color}" opacity="0.85"/>
+      <path d="M6 7 Q9 10 11 14 Q13 10 16 7" stroke="rgba(255,255,255,0.2)" stroke-width="0.5" fill="none"/>
+      <ellipse cx="11" cy="21" rx="5" ry="2" fill="${color}" opacity="0.9"/>
+      <ellipse cx="11" cy="14" rx="3.5" ry="4" fill="rgba(255,255,255,0.18)"/>
+      <path d="M9 23 Q11 27 13 23" stroke="${color}" stroke-width="1" fill="none" opacity="0.7"/>
+      <filter id="f"><feGaussianBlur stdDeviation="2"/></filter>
+      <ellipse cx="11" cy="14" rx="6" ry="7" fill="${color}" opacity="0.12" filter="url(#f)"/>
+    </svg>`;
+  mapWrap.appendChild(el);
+});
+
+// Oil lamps
+PAHANS.forEach(([x, y]) => {
+  const el = document.createElement('div');
+  el.className = 'pahan';
+  el.style.left = pct(x, MAP_W);
+  el.style.top  = pct(y, MAP_H);
+  mapWrap.appendChild(el);
+});
+
+// POIs
+POIS.forEach(poi => {
+  const el = document.createElement('div');
+  el.className = 'poi-marker';
+  el.id = 'poi-' + poi.id;
+  el.style.left = pct(poi.x, MAP_W);
+  el.style.top  = pct(poi.y, MAP_H);
+  el.innerHTML = `
+    <div class="poi-inner" style="background:radial-gradient(circle,${hexToRgbaJs(poi.color,0.25)} 0%,${hexToRgbaJs(poi.color,0.05)} 100%);border:1.5px solid ${hexToRgbaJs(poi.color,0.6)};--poi-pulse:${hexToRgbaJs(poi.color,0.3)}">
+      ${poi.emoji}
+    </div>
+    <div class="poi-label">${poi.label}</div>`;
+  el.addEventListener('click', () => openModal(poi));
+  mapWrap.appendChild(el);
+});
+
+function hexToRgbaJs(hex, a) {
+  if (hex.startsWith('#')) {
+    const r = parseInt(hex.slice(1,3),16);
+    const g = parseInt(hex.slice(3,5),16);
+    const b = parseInt(hex.slice(5,7),16);
+    return `rgba(${r},${g},${b},${a})`;
+  }
+  return hex;
+}
+
+// ============================================================
+//  DRAW
+// ============================================================
+drawMap();
+
+// ============================================================
+//  CHARACTER MOVEMENT
+// ============================================================
+const char = document.getElementById('character');
+
+// Start near main entrance
+let charX = 340;
+let charY = 620;
+const SPEED = 3.5;
+
+// Collision zones (buildings — character cannot enter)
+const COLLISION_ZONES = [
+  { x: 120, y: 106, w: 250, h: 100 },
+  { x: 120, y: 220, w: 250, h: 90  },
+  { x: 120, y: 324, w: 250, h: 100 },
+  { x: 430, y: 106, w: 300, h: 170 },
+  { x: 430, y: 380, w: 300, h: 250 },
+  { x: 0,   y: 0,   w: 76,  h: 66  },
+];
+
+const CHAR_R = 10; // collision radius
+
+function collidesWithBuildings(nx, ny) {
+  for (const z of COLLISION_ZONES) {
+    if (nx + CHAR_R > z.x && nx - CHAR_R < z.x + z.w &&
+        ny + CHAR_R > z.y && ny - CHAR_R < z.y + z.h) return true;
+  }
+  return false;
+}
+
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+const keys = {};
+document.addEventListener('keydown', e => {
+  keys[e.key] = true;
+  if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) e.preventDefault();
+});
+document.addEventListener('keyup', e => { keys[e.key] = false; });
+
+// D-Pad
+document.querySelectorAll('.dpad-btn').forEach(btn => {
+  const dir = btn.dataset.dir;
+  btn.addEventListener('pointerdown', () => { keys[dir] = true;  });
+  btn.addEventListener('pointerup',   () => { keys[dir] = false; });
+  btn.addEventListener('pointerleave',() => { keys[dir] = false; });
+});
+
+function updateChar() {
+  let nx = charX, ny = charY;
+  if (keys['ArrowUp']    || keys['up'])    ny -= SPEED;
+  if (keys['ArrowDown']  || keys['down'])  ny += SPEED;
+  if (keys['ArrowLeft']  || keys['left'])  nx -= SPEED;
+  if (keys['ArrowRight'] || keys['right']) nx += SPEED;
+
+  nx = clamp(nx, 10, MAP_W - 10);
+  ny = clamp(ny, 10, MAP_H - 10);
+
+  if (!collidesWithBuildings(nx, charY)) charX = nx;
+  if (!collidesWithBuildings(charX, ny)) charY = ny;
+
+  // Convert to % for responsive positioning
+  char.style.left = pct(charX, MAP_W);
+  char.style.top  = pct(charY, MAP_H);
+}
+
+// ============================================================
+//  MODAL
+// ============================================================
+const overlay  = document.getElementById('modal-overlay');
+const mTitle   = document.getElementById('modal-title');
+const mDesc    = document.getElementById('modal-desc');
+const mTag     = document.getElementById('modal-tag');
+const mEmoji   = document.getElementById('modal-emoji');
+const mImg     = document.getElementById('modal-img');
+const mClose   = document.getElementById('modal-close');
+
+function openModal(poi) {
+  mTag.textContent   = poi.tag;
+  mTitle.textContent = poi.title;
+  mDesc.textContent  = poi.desc;
+  mEmoji.textContent = poi.imgEmoji;
+  if (poi.img) {
+    mImg.src = poi.img;
+    mImg.style.display = 'block';
+    mEmoji.style.display = 'none';
+  } else {
+    mImg.style.display = 'none';
+    mEmoji.style.display = 'flex';
+  }
+  overlay.classList.add('active');
+}
+
+mClose.addEventListener('click', () => overlay.classList.remove('active'));
+overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('active'); });
+
+// ============================================================
+//  GAME LOOP
+// ============================================================
+function loop() {
+  updateChar();
+  requestAnimationFrame(loop);
+}
+
+// Init character position
+char.style.left = pct(charX, MAP_W);
+char.style.top  = pct(charY, MAP_H);
+loop();
+</script>
+</body>
+</html>
