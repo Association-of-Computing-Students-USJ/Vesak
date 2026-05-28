@@ -3,308 +3,931 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Campus Vesak Zone 2026 🪔 — Live Map</title>
+<title>Campus Vesak Zone 2026 🪔</title>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, set, onValue, remove, onDisconnect }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  // ════════════════════════════════════════════════════
+  //  🔥 PASTE YOUR FIREBASE CONFIG HERE
+  // ════════════════════════════════════════════════════
+  const firebaseConfig = {
+    apiKey: "AIzaSyBsaZsEuNuRGT0sD83gWmXR1vcF6RI5Tak",
+    authDomain: "vesakacs.firebaseapp.com",
+    projectId: "vesakacs",
+    storageBucket: "vesakacs.firebasestorage.app",
+    messagingSenderId: "422374832289",
+    appId: "1:422374832289:web:31c4355b71802c6f3d18e0",
+    databaseURL: "https://vesakacs-default-rtdb.asia-southeast1.firebasedatabase.app"
+  };
+  // ════════════════════════════════════════════════════
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  // Expose to global so the rest of the page can use it
+  window._FB = { db, ref, set, onValue, remove, onDisconnect };
+  window.dispatchEvent(new Event('firebase-ready'));
+</script>
+
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Lato:wght@300;400;700;900&display=swap');
+  /* ===== FONTS & RESET ===== */
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Sinhala:wght@400;700&family=Cinzel+Decorative:wght@400;700&family=Lato:wght@300;400;700;900&display=swap');
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-:root {
-  --night-bg: #040d1a;
-  --gold: #f5c842;
-  --amber: #ffb347;
-  --vesak-pink: #ff6eb4;
-  --vesak-blue: #4fc3f7;
-  --vesak-green: #69f0ae;
-  --vesak-purple: #ce93d8;
-  --glow-gold: rgba(245,200,66,0.7);
-  --map-w: 900;
-  --map-h: 700;
-}
+  :root {
+    --night-bg: #040d1a;
+    --road-color: #1a2540;
+    --road-border: #2a3a60;
+    --building-fill: #0d1f3c;
+    --building-stroke: #1e3a6e;
+    --gold: #f5c842;
+    --amber: #ffb347;
+    --vesak-pink: #ff6eb4;
+    --vesak-blue: #4fc3f7;
+    --vesak-green: #69f0ae;
+    --vesak-purple: #ce93d8;
+    --glow-gold: rgba(245,200,66,0.7);
+    --glow-pink: rgba(255,110,180,0.5);
+    --poi-pulse: rgba(255,200,50,0.3);
+    --map-w: 900px;
+    --map-h: 700px;
+  }
 
-body {
-  background: var(--night-bg);
-  font-family: 'Lato', sans-serif;
-  color: #e0e8ff;
-  height: 100vh; width: 100vw;
-  overflow: hidden;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-}
+  body {
+    background: var(--night-bg);
+    font-family: 'Lato', sans-serif;
+    color: #e0e8ff;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
 
-/* ─── STARS ─────────────────────────────── */
-.stars-layer {
-  position: fixed; inset: 0; pointer-events: none; z-index: 0;
-  background: radial-gradient(ellipse at 50% 20%, #0a1628 0%, #020810 100%);
-}
-.stars-layer::before, .stars-layer::after {
-  content: ''; position: absolute; inset: 0;
-  background-image:
-    radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.8) 0%, transparent 100%),
-    radial-gradient(1px 1px at 25% 35%, rgba(255,255,255,0.6) 0%, transparent 100%),
-    radial-gradient(1px 1px at 40% 10%, rgba(255,255,255,0.9) 0%, transparent 100%),
-    radial-gradient(1px 1px at 55% 25%, rgba(255,255,255,0.5) 0%, transparent 100%),
-    radial-gradient(1px 1px at 70% 8%,  rgba(255,255,255,0.7) 0%, transparent 100%),
-    radial-gradient(1px 1px at 85% 18%, rgba(255,255,255,0.8) 0%, transparent 100%),
-    radial-gradient(1px 1px at 15% 50%, rgba(255,255,255,0.4) 0%, transparent 100%),
-    radial-gradient(1px 1px at 30% 60%, rgba(255,255,255,0.6) 0%, transparent 100%),
-    radial-gradient(1px 1px at 60% 55%, rgba(255,255,255,0.5) 0%, transparent 100%),
-    radial-gradient(1px 1px at 80% 45%, rgba(255,255,255,0.7) 0%, transparent 100%),
-    radial-gradient(1px 1px at 90% 70%, rgba(255,255,255,0.4) 0%, transparent 100%),
-    radial-gradient(1px 1px at 5%  80%, rgba(255,255,255,0.6) 0%, transparent 100%),
-    radial-gradient(1px 1px at 45% 75%, rgba(255,255,255,0.5) 0%, transparent 100%),
-    radial-gradient(1px 1px at 65% 85%, rgba(255,255,255,0.8) 0%, transparent 100%),
-    radial-gradient(1px 1px at 20% 90%, rgba(255,255,255,0.6) 0%, transparent 100%);
-  animation: twinkle 4s infinite alternate;
-}
-.stars-layer::after {
-  background-image:
-    radial-gradient(1px 1px at 18% 22%, rgba(200,230,255,0.7) 0%, transparent 100%),
-    radial-gradient(1px 1px at 38% 42%, rgba(200,230,255,0.5) 0%, transparent 100%),
-    radial-gradient(1px 1px at 58% 12%, rgba(200,230,255,0.8) 0%, transparent 100%),
-    radial-gradient(1px 1px at 78% 32%, rgba(200,230,255,0.6) 0%, transparent 100%),
-    radial-gradient(1px 1px at 48% 62%, rgba(200,230,255,0.4) 0%, transparent 100%),
-    radial-gradient(1px 1px at 88% 52%, rgba(200,230,255,0.7) 0%, transparent 100%);
-  animation: twinkle 6s infinite alternate-reverse;
-}
-@keyframes twinkle { 0% { opacity:0.4; } 100% { opacity:1; } }
+  /* ── LOGIN SCREEN ── */
+  #login-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(2, 8, 22, .97);
+    backdrop-filter: blur(10px)
+  }
 
-/* ─── LOGIN SCREEN ───────────────────────── */
-#login-screen {
-  position: fixed; inset: 0; z-index: 500;
-  display: flex; align-items: center; justify-content: center;
-  background: rgba(2,8,22,0.97);
-  backdrop-filter: blur(10px);
-}
-.login-card {
-  background: linear-gradient(145deg, #08152c 0%, #0d1f42 100%);
-  border: 1px solid rgba(245,200,66,0.25);
-  border-radius: 22px;
-  padding: 36px 38px 32px;
-  width: min(440px, 94vw);
-  box-shadow: 0 0 80px rgba(245,200,66,0.1), 0 40px 100px rgba(0,0,0,0.7);
-  text-align: center;
-}
-.login-card .lc-icon { font-size: 3rem; margin-bottom: 6px; animation: poi-float 3s ease-in-out infinite; }
-@keyframes poi-float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
-.login-card h2 {
-  font-family: 'Cinzel Decorative', serif;
-  font-size: 1.2rem; color: var(--gold);
-  text-shadow: 0 0 18px rgba(245,200,66,0.5);
-  margin-bottom: 4px;
-}
-.login-card .sub { font-size: 0.7rem; color: #607a9a; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 26px; }
+  .login-card {
+    background: linear-gradient(145deg, #08152c, #0d1f42);
+    border: 1px solid rgba(245, 200, 66, .25);
+    border-radius: 22px;
+    padding: 32px 36px 28px;
+    width: min(430px, 94vw);
+    box-shadow: 0 0 80px rgba(245, 200, 66, .1), 0 40px 100px rgba(0, 0, 0, .7);
+    text-align: center
+  }
 
-.lc-label { display: block; font-size: 0.7rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #6a8ab0; margin-bottom: 7px; text-align: left; }
+  .lc-icon {
+    font-size: 2.8rem;
+    margin-bottom: 5px;
+    animation: float 3s ease-in-out infinite
+  }
 
-.lc-input {
-  width: 100%;
-  background: rgba(10,25,60,0.8);
-  border: 1px solid rgba(100,150,255,0.2);
-  border-radius: 10px;
-  color: #d0e4ff;
-  font-size: 0.95rem;
-  font-family: 'Lato', sans-serif;
-  padding: 11px 15px;
-  outline: none;
-  transition: border-color 0.2s;
-  margin-bottom: 20px;
-}
-.lc-input:focus { border-color: rgba(245,200,66,0.5); }
-.lc-input::placeholder { color: #3a5070; }
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0)
+    }
+    50% {
+      transform: translateY(-8px)
+    }
+  }
 
-/* Gender toggle */
-.gender-row { display: flex; gap: 10px; margin-bottom: 22px; }
-.gender-btn {
-  flex: 1; padding: 11px 8px;
-  background: rgba(10,25,60,0.7);
-  border: 1.5px solid rgba(100,150,255,0.18);
-  border-radius: 10px; color: #7090b0;
-  font-size: 1.1rem; cursor: pointer;
-  transition: all 0.2s; font-family: 'Lato', sans-serif;
-  display: flex; flex-direction: column; align-items: center; gap: 4px;
-}
-.gender-btn span { font-size: 0.65rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
-.gender-btn.active-male   { border-color: var(--vesak-blue);  background: rgba(79,195,247,0.12); color: var(--vesak-blue); }
-.gender-btn.active-female { border-color: var(--vesak-pink);  background: rgba(255,110,180,0.12); color: var(--vesak-pink); }
+  .login-card h2 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.15rem;
+    color: var(--gold);
+    text-shadow: 0 0 18px rgba(245, 200, 66, .5);
+    margin-bottom: 3px
+  }
 
-/* Avatar grid */
-.avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 24px; }
-.avatar-opt {
-  aspect-ratio: 1; border-radius: 12px;
-  background: rgba(10,25,60,0.7);
-  border: 2px solid rgba(100,150,255,0.15);
-  cursor: pointer; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 4px;
-  font-size: 1.6rem; transition: all 0.2s;
-  padding: 6px;
-}
-.avatar-opt .av-name { font-size: 0.52rem; font-weight: 700; letter-spacing: 0.5px; color: #5a7a9a; text-transform: uppercase; }
-.avatar-opt:hover { border-color: rgba(245,200,66,0.4); transform: scale(1.05); }
-.avatar-opt.selected { border-color: var(--gold); background: rgba(245,200,66,0.12); box-shadow: 0 0 14px rgba(245,200,66,0.3); }
-.avatar-opt.selected .av-name { color: var(--gold); }
+  .login-card .sub {
+    font-size: .68rem;
+    color: #607a9a;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 22px
+  }
 
-.lc-btn {
-  width: 100%; padding: 13px;
-  background: linear-gradient(135deg, #f5c842, #e6952a);
-  border: none; border-radius: 12px;
-  color: #050d1a; font-size: 0.9rem; font-weight: 900;
-  letter-spacing: 1.5px; text-transform: uppercase;
-  cursor: pointer;
-  box-shadow: 0 4px 24px rgba(245,200,66,0.3);
-  transition: transform 0.15s, box-shadow 0.15s;
-}
-.lc-btn:hover { transform: scale(1.02); box-shadow: 0 6px 32px rgba(245,200,66,0.5); }
-.lc-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .lc-label {
+    display: block;
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #6a8ab0;
+    margin-bottom: 6px;
+    text-align: left
+  }
 
-/* ─── HEADER ─────────────────────────────── */
-.header {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  text-align: center; padding: 8px 20px 6px;
-  background: linear-gradient(to bottom, rgba(4,13,26,0.98) 70%, transparent);
-  display: flex; align-items: center; justify-content: space-between;
-}
-.header-center h1 {
-  font-family: 'Cinzel Decorative', serif; font-size: 1.15rem;
-  color: var(--gold); text-shadow: 0 0 20px var(--glow-gold);
-  letter-spacing: 2px;
-}
-.header-center p { font-size: 0.65rem; color: #8aabcc; letter-spacing: 3px; text-transform: uppercase; margin-top: 1px; }
-.online-badge {
-  background: rgba(105,240,174,0.12); border: 1px solid rgba(105,240,174,0.3);
-  border-radius: 20px; padding: 5px 12px;
-  font-size: 0.65rem; color: var(--vesak-green); letter-spacing: 1px;
-  display: flex; align-items: center; gap: 6px;
-}
-.online-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--vesak-green); animation: pulse-dot 1.5s ease-in-out infinite; }
-@keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.7)} }
-.my-badge {
-  background: rgba(245,200,66,0.1); border: 1px solid rgba(245,200,66,0.25);
-  border-radius: 20px; padding: 5px 12px;
-  font-size: 0.65rem; color: var(--gold); letter-spacing: 1px;
-}
+  .lc-input {
+    width: 100%;
+    background: rgba(10, 25, 60, .8);
+    border: 1px solid rgba(100, 150, 255, .2);
+    border-radius: 10px;
+    color: #d0e4ff;
+    font-size: .95rem;
+    font-family: 'Lato', sans-serif;
+    padding: 11px 15px;
+    outline: none;
+    transition: border-color .2s;
+    margin-bottom: 18px
+  }
 
-/* ─── MAP ─────────────────────────────────── */
-#map-wrap {
-  position: relative; z-index: 10;
-  width: 900px; height: 700px;
-  margin-top: 60px; border-radius: 12px; overflow: hidden;
-  border: 1px solid rgba(100,160,255,0.15);
-  box-shadow: 0 0 60px rgba(0,80,200,0.15), 0 0 120px rgba(245,200,66,0.05);
-}
-#map-canvas { display: block; width: 100%; height: 100%; }
+  .lc-input:focus {
+    border-color: rgba(245, 200, 66, .5)
+  }
 
-/* ─── PLAYER TOKENS ──────────────────────── */
-.player-token {
-  position: absolute; z-index: 30;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  transition: left 0.12s linear, top 0.12s linear;
-  display: flex; flex-direction: column; align-items: center; gap: 2px;
-}
-.player-token.is-me { z-index: 35; }
-.token-svg { width: 32px; height: 36px; }
-.token-name {
-  background: rgba(5,15,40,0.88);
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 20px; padding: 2px 8px;
-  font-size: 0.55rem; font-weight: 700;
-  letter-spacing: 0.5px; color: #c0d8f0;
-  white-space: nowrap; max-width: 80px;
-  overflow: hidden; text-overflow: ellipsis;
-  backdrop-filter: blur(4px);
-}
-.player-token.is-me .token-name { border-color: rgba(245,200,66,0.5); color: var(--gold); }
-.token-glow {
-  position: absolute; inset: -8px; border-radius: 50%;
-  animation: char-glow 1.8s ease-in-out infinite alternate;
-  pointer-events: none;
-}
-@keyframes char-glow { from{opacity:0.5;transform:scale(0.9)} to{opacity:1;transform:scale(1.15)} }
+  .lc-input::placeholder {
+    color: #3a5070
+  }
 
-/* ─── STREET LIGHTS ──────────────────────── */
-.street-light { position: absolute; width: 6px; height: 6px; border-radius: 50%; z-index: 20; pointer-events: none; }
-.street-light.gold { background: var(--gold); box-shadow: 0 0 8px 4px rgba(245,200,66,0.6), 0 0 20px 10px rgba(245,200,66,0.2); animation: light-flicker 3s ease-in-out infinite; }
-.street-light.blue { background: var(--vesak-blue); box-shadow: 0 0 8px 4px rgba(79,195,247,0.6), 0 0 20px 10px rgba(79,195,247,0.2); animation: light-flicker 4s ease-in-out infinite reverse; }
-@keyframes light-flicker { 0%,100%{opacity:1} 50%{opacity:0.7} }
+  .gender-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 18px
+  }
 
-/* ─── LANTERNS ───────────────────────────── */
-.lantern { position: absolute; z-index: 22; pointer-events: none; transform: translate(-50%,-50%); animation: lantern-sway 4s ease-in-out infinite; }
-.lantern:nth-child(even) { animation-direction: reverse; }
-@keyframes lantern-sway { 0%,100%{transform:translate(-50%,-50%) rotate(-6deg)} 50%{transform:translate(-50%,-50%) rotate(6deg)} }
-.lantern svg { width: 22px; height: 28px; }
+  .gender-btn {
+    flex: 1;
+    padding: 10px 8px;
+    background: rgba(10, 25, 60, .7);
+    border: 1.5px solid rgba(100, 150, 255, .18);
+    border-radius: 10px;
+    color: #7090b0;
+    font-size: 1.05rem;
+    cursor: pointer;
+    transition: all .2s;
+    font-family: 'Lato', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px
+  }
 
-/* ─── OIL LAMPS ──────────────────────────── */
-.pahan { position: absolute; z-index: 21; width:8px; height:8px; border-radius:50% 50% 40% 40%; background:radial-gradient(circle at 50% 60%,#fff5b0,#f5a623); box-shadow:0 0 6px 3px rgba(255,170,60,0.7),0 0 14px 8px rgba(255,150,30,0.3); pointer-events:none; animation: pahan-flicker 1.8s ease-in-out infinite; }
-.pahan:nth-child(2n){animation-delay:0.6s} .pahan:nth-child(3n){animation-delay:1.2s}
-@keyframes pahan-flicker { 0%,100%{opacity:1;box-shadow:0 0 6px 3px rgba(255,170,60,0.7),0 0 14px 8px rgba(255,150,30,0.3)} 40%{opacity:0.6;box-shadow:0 0 3px 2px rgba(255,170,60,0.4),0 0 8px 4px rgba(255,150,30,0.2)} }
+  .gender-btn span {
+    font-size: .6rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase
+  }
 
-/* ─── POI MARKERS ────────────────────────── */
-.poi-marker { position: absolute; z-index: 25; transform: translate(-50%,-50%); cursor: pointer; width: 36px; height: 36px; }
-.poi-inner { width:100%;height:100%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;animation:poi-pulse 2.5s ease-out infinite;position:relative; }
-.poi-marker:hover .poi-inner { transform: scale(1.2); }
-@keyframes poi-pulse { 0%{box-shadow:0 0 0 0 rgba(255,200,50,0.3)} 70%{box-shadow:0 0 0 16px rgba(255,200,50,0)} 100%{box-shadow:0 0 0 0 rgba(255,200,50,0)} }
-.poi-label { position:absolute;bottom:100%;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:0.6rem;background:rgba(5,15,40,0.9);color:var(--gold);border:1px solid rgba(245,200,66,0.3);border-radius:20px;padding:2px 8px;margin-bottom:6px;pointer-events:none;letter-spacing:0.5px;opacity:0;transition:opacity 0.2s; }
-.poi-marker:hover .poi-label { opacity:1; }
+  .gender-btn.sel-m {
+    border-color: var(--vesak-blue);
+    background: rgba(79, 195, 247, .12);
+    color: var(--vesak-blue)
+  }
 
-/* ─── CONTROLS ───────────────────────────── */
-.controls-hint {
-  position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%);
-  z-index: 100; display: flex; gap: 10px; align-items: center;
-  background: rgba(10,20,50,0.85); border: 1px solid rgba(100,150,255,0.2);
-  border-radius: 40px; padding: 7px 18px;
-  font-size: 0.72rem; color: #8aabcc; letter-spacing: 1px; backdrop-filter: blur(8px);
-}
-.key { display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:5px;font-size:0.65rem;color:#c0d4ee; }
+  .gender-btn.sel-f {
+    border-color: var(--vesak-pink);
+    background: rgba(255, 110, 180, .12);
+    color: var(--vesak-pink)
+  }
 
-/* ─── DPAD ───────────────────────────────── */
-#dpad { position:fixed;bottom:50px;right:20px;z-index:100;display:none; }
-@media(max-width:800px){#dpad{display:grid}body{overflow:auto}#map-wrap{width:100vw;height:60vh;margin-top:55px;border-radius:0}}
-.dpad-grid{display:grid;grid-template-areas:'.up.' 'left . right' '.down.';grid-template-columns:44px 44px 44px;grid-template-rows:44px 44px 44px;gap:4px}
-.dpad-btn{background:rgba(20,40,80,0.85);border:1px solid rgba(100,150,255,0.3);border-radius:8px;color:var(--gold);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);user-select:none;touch-action:none}
-.dpad-btn:active{background:rgba(40,80,160,0.9)}
-.dpad-up{grid-area:up}.dpad-left{grid-area:left}.dpad-right{grid-area:right}.dpad-down{grid-area:down}
+  .avatar-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 20px
+  }
 
-/* ─── TICKER ─────────────────────────────── */
-.ticker{position:fixed;top:58px;left:0;right:0;z-index:90;height:22px;overflow:hidden;background:rgba(4,13,26,0.6);border-bottom:1px solid rgba(245,200,66,0.08);display:flex;align-items:center}
-.ticker-inner{white-space:nowrap;font-size:0.65rem;color:rgba(245,200,66,0.6);letter-spacing:2px;text-transform:uppercase;animation:ticker-scroll 20s linear infinite;padding-left:100%}
-@keyframes ticker-scroll{from{transform:translateX(0)}to{transform:translateX(-100%)}}
+  .av-opt {
+    aspect-ratio: 1;
+    border-radius: 11px;
+    background: rgba(10, 25, 60, .7);
+    border: 2px solid rgba(100, 150, 255, .15);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    font-size: 1.5rem;
+    transition: all .2s;
+    padding: 4px
+  }
 
-/* ─── MODAL ──────────────────────────────── */
-#modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(2,8,20,0.85);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s}
-#modal-overlay.active{opacity:1;pointer-events:all}
-#modal-box{background:linear-gradient(145deg,#091428 0%,#0d1f40 100%);border:1px solid rgba(245,200,66,0.35);border-radius:18px;width:min(480px,92vw);overflow:hidden;box-shadow:0 0 60px rgba(245,200,66,0.15),0 30px 80px rgba(0,0,0,0.7);transform:scale(0.9) translateY(20px);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1)}
-#modal-overlay.active #modal-box{transform:scale(1) translateY(0)}
-#modal-img-wrap{width:100%;height:200px;overflow:hidden;position:relative;background:linear-gradient(135deg,#0a1e40,#1a0a30)}
-#modal-img-wrap img{width:100%;height:100%;object-fit:cover;opacity:0.85}
-#modal-img-wrap .img-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,#091428 100%)}
-#modal-img-wrap .img-emoji{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:5rem;filter:drop-shadow(0 0 20px rgba(255,200,50,0.6));animation:poi-float 3s ease-in-out infinite}
-.modal-body{padding:20px 26px 26px}
-.modal-tag{display:inline-block;font-size:0.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--vesak-pink);border:1px solid rgba(255,110,180,0.35);border-radius:20px;padding:3px 10px;margin-bottom:8px}
-#modal-title{font-family:'Cinzel Decorative',serif;font-size:1.15rem;color:var(--gold);text-shadow:0 0 15px rgba(245,200,66,0.4);margin-bottom:10px;line-height:1.4}
-#modal-desc{font-size:0.85rem;line-height:1.7;color:#a8c0df;margin-bottom:18px}
-.modal-footer{display:flex;align-items:center;justify-content:space-between}
-.modal-footer .festival-badge{font-size:0.65rem;color:#5a7a9a;letter-spacing:1px}
-#modal-close{background:linear-gradient(135deg,#f5c842,#e6952a);color:#050d1a;border:none;border-radius:30px;padding:9px 24px;font-size:0.8rem;font-weight:700;letter-spacing:1px;cursor:pointer;text-transform:uppercase;box-shadow:0 4px 20px rgba(245,200,66,0.35);transition:transform 0.15s,box-shadow 0.15s}
-#modal-close:hover{transform:scale(1.05);box-shadow:0 6px 28px rgba(245,200,66,0.55)}
+  .av-opt .av-n {
+    font-size: .48rem;
+    font-weight: 700;
+    letter-spacing: .5px;
+    color: #5a7a9a;
+    text-transform: uppercase
+  }
 
-/* ─── PLAYERS PANEL ──────────────────────── */
-#players-panel {
-  position: fixed; top: 90px; right: 12px; z-index: 90;
-  background: rgba(5,15,40,0.85); border: 1px solid rgba(100,150,255,0.15);
-  border-radius: 12px; padding: 10px 14px; backdrop-filter: blur(8px);
-  min-width: 140px; max-height: 300px; overflow-y: auto;
-}
-#players-panel h4 { font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; color: #4a6a8a; margin-bottom: 8px; }
-.pp-row { display: flex; align-items: center; gap: 7px; margin-bottom: 6px; font-size: 0.68rem; color: #9ab0cc; }
-.pp-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .av-opt:hover {
+    border-color: rgba(245, 200, 66, .4);
+    transform: scale(1.05)
+  }
+
+  .av-opt.sel {
+    border-color: var(--gold);
+    background: rgba(245, 200, 66, .12);
+    box-shadow: 0 0 14px rgba(245, 200, 66, .3)
+  }
+
+  .av-opt.sel .av-n {
+    color: var(--gold)
+  }
+
+  .lc-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #f5c842, #e6952a);
+    border: none;
+    border-radius: 12px;
+    color: #050d1a;
+    font-size: .88rem;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 4px 24px rgba(245, 200, 66, .3);
+    transition: transform .15s, box-shadow .15s
+  }
+
+  .lc-btn:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 32px rgba(245, 200, 66, .5)
+  }
+
+  .lc-btn:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+    transform: none
+  }
+
+  /* ── PLAYERS TOKENS ── */
+  .player-token {
+    position: absolute;
+    z-index: 30;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    transition: left .12s linear, top .12s linear
+  }
+
+  .player-token.is-me {
+    z-index: 35;
+    transition: none
+  }
+
+  .tok-wrap {
+    position: relative;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center
+  }
+
+  .tok-glow {
+    position: absolute;
+    inset: -10px;
+    border-radius: 50%;
+    animation: cglow 1.8s ease-in-out infinite alternate;
+    pointer-events: none
+  }
+
+  @keyframes cglow {
+    from {
+      opacity: .5;
+      transform: scale(.9)
+    }
+    to {
+      opacity: 1;
+      transform: scale(1.15)
+    }
+  }
+
+  .tok-emoji {
+    font-size: 1.8rem;
+    line-height: 1;
+    position: relative;
+    z-index: 1
+  }
+
+  .tok-name {
+    background: rgba(5, 15, 40, .88);
+    border: 1px solid rgba(255, 255, 255, .15);
+    border-radius: 20px;
+    padding: 2px 8px;
+    font-size: .52rem;
+    font-weight: 700;
+    letter-spacing: .5px;
+    color: #c0d8f0;
+    white-space: nowrap;
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    backdrop-filter: blur(4px)
+  }
+
+  .player-token.is-me .tok-name {
+    border-color: rgba(245, 200, 66, .5);
+    color: var(--gold)
+  }
+
+  /* ── PLAYERS PANEL ── */
+  #pp {
+    position: fixed;
+    top: 88px;
+    right: 12px;
+    z-index: 90;
+    background: rgba(5, 15, 40, .85);
+    border: 1px solid rgba(100, 150, 255, .15);
+    border-radius: 12px;
+    padding: 10px 14px;
+    backdrop-filter: blur(8px);
+    min-width: 140px;
+    max-height: 260px;
+    overflow-y: auto
+  }
+
+  #pp h4 {
+    font-size: .58rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #4a6a8a;
+    margin-bottom: 8px
+  }
+
+  .pp-row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 5px;
+    font-size: .66rem;
+    color: #9ab0cc
+  }
+
+  .pp-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0
+  }
+
+  /* ── ONLINE BADGES in header ── */
+  .online-badge {
+    background: rgba(105, 240, 174, .12);
+    border: 1px solid rgba(105, 240, 174, .3);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: .65rem;
+    color: var(--vesak-green);
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 6px
+  }
+
+  .online-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--vesak-green);
+    animation: pulse-dot 1.5s ease-in-out infinite
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1)
+    }
+    50% {
+      opacity: .5;
+      transform: scale(.7)
+    }
+  }
+
+  .my-badge {
+    background: rgba(245, 200, 66, .1);
+    border: 1px solid rgba(245, 200, 66, .25);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: .65rem;
+    color: var(--gold);
+    letter-spacing: 1px
+  }
+
+  /* ===== STARS BACKGROUND ===== */
+  .stars-layer {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background: radial-gradient(ellipse at 50% 20%, #0a1628 0%, #020810 100%);
+    overflow: hidden;
+  }
+  .stars-layer::before, .stars-layer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.8) 0%, transparent 100%),
+      radial-gradient(1px 1px at 25% 35%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 40% 10%, rgba(255,255,255,0.9) 0%, transparent 100%),
+      radial-gradient(1px 1px at 55% 25%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 8%,  rgba(255,255,255,0.7) 0%, transparent 100%),
+      radial-gradient(1px 1px at 85% 18%, rgba(255,255,255,0.8) 0%, transparent 100%),
+      radial-gradient(1px 1px at 15% 50%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 30% 60%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 60% 55%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 80% 45%, rgba(255,255,255,0.7) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 70%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 5%  80%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 45% 75%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 65% 85%, rgba(255,255,255,0.8) 0%, transparent 100%),
+      radial-gradient(1px 1px at 20% 90%, rgba(255,255,255,0.6) 0%, transparent 100%);
+    animation: twinkle 4s infinite alternate;
+  }
+  .stars-layer::after {
+    background-image:
+      radial-gradient(1px 1px at 18% 22%, rgba(200,230,255,0.7) 0%, transparent 100%),
+      radial-gradient(1px 1px at 38% 42%, rgba(200,230,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 58% 12%, rgba(200,230,255,0.8) 0%, transparent 100%),
+      radial-gradient(1px 1px at 78% 32%, rgba(200,230,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 48% 62%, rgba(200,230,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 88% 52%, rgba(200,230,255,0.7) 0%, transparent 100%),
+      radial-gradient(1px 1px at 8%  42%, rgba(200,230,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 28% 72%, rgba(200,230,255,0.8) 0%, transparent 100%),
+      radial-gradient(1px 1px at 68% 68%, rgba(200,230,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 92% 88%, rgba(200,230,255,0.4) 0%, transparent 100%);
+    animation: twinkle 6s infinite alternate-reverse;
+  }
+  @keyframes twinkle {
+    0%   { opacity: 0.4; }
+    100% { opacity: 1; }
+  }
+
+  /* ===== HEADER ===== */
+  .header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    text-align: center;
+    padding: 10px 20px 8px;
+    background: linear-gradient(to bottom, rgba(4,13,26,0.98) 70%, transparent);
+  }
+  .header h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.4rem;
+    color: var(--gold);
+    text-shadow: 0 0 20px var(--glow-gold), 0 0 40px rgba(245,200,66,0.3);
+    letter-spacing: 2px;
+  }
+  .header p {
+    font-size: 0.72rem;
+    color: #8aabcc;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  /* ===== CONTROLS HINT ===== */
+  .controls-hint {
+    position: fixed;
+    bottom: 14px; left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    background: rgba(10,20,50,0.85);
+    border: 1px solid rgba(100,150,255,0.2);
+    border-radius: 40px;
+    padding: 7px 18px;
+    font-size: 0.72rem;
+    color: #8aabcc;
+    letter-spacing: 1px;
+    backdrop-filter: blur(8px);
+  }
+  .key {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 5px;
+    font-size: 0.65rem;
+    color: #c0d4ee;
+  }
+
+  /* ===== MAP WRAPPER ===== */
+  #map-wrap {
+    position: relative;
+    z-index: 10;
+    width: var(--map-w);
+    height: var(--map-h);
+    margin-top: 60px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(100,160,255,0.15);
+    box-shadow: 0 0 60px rgba(0,80,200,0.15), 0 0 120px rgba(245,200,66,0.05);
+  }
+
+  /* ===== CANVAS ===== */
+  #map-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ===== CHARACTER ===== */
+  #character {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    transform: translate(-50%, -50%);
+    z-index: 30;
+    pointer-events: none;
+    transition: left 0.06s linear, top 0.06s linear;
+  }
+  #character::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,220,80,0.35) 0%, transparent 70%);
+    animation: char-glow 1.5s ease-in-out infinite alternate;
+  }
+  @keyframes char-glow {
+    from { opacity: 0.6; transform: scale(0.9); }
+    to   { opacity: 1;   transform: scale(1.15); }
+  }
+  #character svg { width: 28px; height: 28px; }
+
+  /* ===== STREET LIGHTS ===== */
+  .street-light {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    z-index: 20;
+    pointer-events: none;
+  }
+  .street-light.gold {
+    background: var(--gold);
+    box-shadow: 0 0 8px 4px rgba(245,200,66,0.6), 0 0 20px 10px rgba(245,200,66,0.2);
+    animation: light-flicker 3s ease-in-out infinite;
+  }
+  .street-light.blue {
+    background: var(--vesak-blue);
+    box-shadow: 0 0 8px 4px rgba(79,195,247,0.6), 0 0 20px 10px rgba(79,195,247,0.2);
+    animation: light-flicker 4s ease-in-out infinite reverse;
+  }
+  @keyframes light-flicker {
+    0%,100% { opacity: 1; }
+    50%      { opacity: 0.7; }
+  }
+
+  /* ===== VESAK LANTERNS ===== */
+  .lantern {
+    position: absolute;
+    z-index: 22;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    animation: lantern-sway 4s ease-in-out infinite;
+  }
+  .lantern:nth-child(even) { animation-direction: reverse; }
+  @keyframes lantern-sway {
+    0%,100% { transform: translate(-50%,-50%) rotate(-6deg); }
+    50%      { transform: translate(-50%,-50%) rotate(6deg); }
+  }
+  .lantern svg { width: 22px; height: 28px; }
+
+  /* ===== OIL LAMPS ===== */
+  .pahan {
+    position: absolute;
+    z-index: 21;
+    width: 8px; height: 8px;
+    border-radius: 50% 50% 40% 40%;
+    background: radial-gradient(circle at 50% 60%, #fff5b0, #f5a623);
+    box-shadow: 0 0 6px 3px rgba(255,170,60,0.7), 0 0 14px 8px rgba(255,150,30,0.3);
+    pointer-events: none;
+    animation: pahan-flicker 1.8s ease-in-out infinite;
+  }
+  .pahan:nth-child(2n) { animation-delay: 0.6s; }
+  .pahan:nth-child(3n) { animation-delay: 1.2s; }
+  @keyframes pahan-flicker {
+    0%,100% { opacity: 1; box-shadow: 0 0 6px 3px rgba(255,170,60,0.7), 0 0 14px 8px rgba(255,150,30,0.3); }
+    40%      { opacity: 0.6; box-shadow: 0 0 3px 2px rgba(255,170,60,0.4), 0 0 8px 4px rgba(255,150,30,0.2); }
+    70%      { opacity: 0.9; }
+  }
+
+  /* ===== POI MARKERS ===== */
+  .poi-marker {
+    position: absolute;
+    z-index: 25;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    width: 36px; height: 36px;
+  }
+  .poi-marker .poi-inner {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    animation: poi-pulse 2.5s ease-out infinite;
+    position: relative;
+  }
+  .poi-marker:hover .poi-inner { transform: scale(1.2); }
+  @keyframes poi-pulse {
+    0%   { box-shadow: 0 0 0 0 var(--poi-pulse); }
+    70%  { box-shadow: 0 0 0 16px rgba(255,200,50,0); }
+    100% { box-shadow: 0 0 0 0 rgba(255,200,50,0); }
+  }
+  .poi-marker .poi-label {
+    position: absolute;
+    bottom: 100%; left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-size: 0.6rem;
+    background: rgba(5,15,40,0.9);
+    color: var(--gold);
+    border: 1px solid rgba(245,200,66,0.3);
+    border-radius: 20px;
+    padding: 2px 8px;
+    margin-bottom: 6px;
+    pointer-events: none;
+    letter-spacing: 0.5px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .poi-marker:hover .poi-label { opacity: 1; }
+
+  /* ===== BUILDING LABELS ===== */
+  .bld-label {
+    position: absolute;
+    z-index: 20;
+    pointer-events: none;
+    font-size: 0.58rem;
+    font-family: 'Lato', sans-serif;
+    font-weight: 700;
+    color: rgba(160,200,255,0.75);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    line-height: 1.3;
+  }
+
+  /* ===== MODAL ===== */
+  #modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(2,8,20,0.85);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  #modal-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+  #modal-box {
+    background: linear-gradient(145deg, #091428 0%, #0d1f40 100%);
+    border: 1px solid rgba(245,200,66,0.35);
+    border-radius: 18px;
+    width: min(480px, 92vw);
+    overflow: hidden;
+    box-shadow: 0 0 60px rgba(245,200,66,0.15), 0 30px 80px rgba(0,0,0,0.7);
+    transform: scale(0.9) translateY(20px);
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  #modal-overlay.active #modal-box {
+    transform: scale(1) translateY(0);
+  }
+  #modal-img-wrap {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(135deg, #0a1e40, #1a0a30);
+  }
+  #modal-img-wrap img {
+    width: 100%; height: 100%; object-fit: cover;
+    opacity: 0.85;
+  }
+  #modal-img-wrap .img-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 40%, #091428 100%);
+  }
+  #modal-img-wrap .img-emoji {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 5rem;
+    filter: drop-shadow(0 0 20px rgba(255,200,50,0.6));
+    animation: poi-float 3s ease-in-out infinite;
+  }
+  @keyframes poi-float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  .modal-body { padding: 20px 26px 26px; }
+  .modal-tag {
+    display: inline-block;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--vesak-pink);
+    border: 1px solid rgba(255,110,180,0.35);
+    border-radius: 20px;
+    padding: 3px 10px;
+    margin-bottom: 8px;
+  }
+  #modal-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.15rem;
+    color: var(--gold);
+    text-shadow: 0 0 15px rgba(245,200,66,0.4);
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+  #modal-desc {
+    font-size: 0.85rem;
+    line-height: 1.7;
+    color: #a8c0df;
+    margin-bottom: 18px;
+  }
+  .modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .modal-footer .festival-badge {
+    font-size: 0.65rem;
+    color: #5a7a9a;
+    letter-spacing: 1px;
+  }
+  #modal-close {
+    background: linear-gradient(135deg, #f5c842, #e6952a);
+    color: #050d1a;
+    border: none;
+    border-radius: 30px;
+    padding: 9px 24px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    text-transform: uppercase;
+    box-shadow: 0 4px 20px rgba(245,200,66,0.35);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  #modal-close:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 28px rgba(245,200,66,0.55);
+  }
+
+  /* ===== MOBILE DPAD ===== */
+  #dpad {
+    position: fixed;
+    bottom: 50px; right: 20px;
+    z-index: 100;
+    display: none;
+  }
+  @media (max-width: 800px) {
+    #dpad { display: grid; }
+    body { overflow: auto; }
+    #map-wrap { width: 100vw; height: 60vh; margin-top: 55px; border-radius: 0; }
+    :root { --map-w: 100vw; --map-h: 60vh; }
+  }
+  .dpad-grid {
+    display: grid;
+    grid-template-areas: '. up .' 'left . right' '. down .';
+    grid-template-columns: 44px 44px 44px;
+    grid-template-rows: 44px 44px 44px;
+    gap: 4px;
+  }
+  .dpad-btn {
+    background: rgba(20,40,80,0.85);
+    border: 1px solid rgba(100,150,255,0.3);
+    border-radius: 8px;
+    color: var(--gold);
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+    user-select: none;
+    touch-action: none;
+  }
+  .dpad-btn:active { background: rgba(40,80,160,0.9); }
+  .dpad-up    { grid-area: up; }
+  .dpad-left  { grid-area: left; }
+  .dpad-right { grid-area: right; }
+  .dpad-down  { grid-area: down; }
+
+  /* ===== SCROLLING TICKER ===== */
+  .ticker {
+    position: fixed;
+    top: 62px; left: 0; right: 0;
+    z-index: 90;
+    height: 24px;
+    overflow: hidden;
+    background: rgba(4,13,26,0.6);
+    border-bottom: 1px solid rgba(245,200,66,0.08);
+    display: flex;
+    align-items: center;
+  }
+  .ticker-inner {
+    white-space: nowrap;
+    font-size: 0.65rem;
+    color: rgba(245,200,66,0.6);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    animation: ticker-scroll 20s linear infinite;
+    padding-left: 100%;
+  }
+  @keyframes ticker-scroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-100%); }
+  }
 </style>
 </head>
 <body>
 
+<!-- Stars -->
 <div class="stars-layer"></div>
 
-<!-- ═══════════════════════ LOGIN SCREEN ═══════════════════════ -->
+<!-- Header -->
+<header class="header" id="main-hdr" style="display:none">
+  <div class="my-badge" id="my-badge">🪔 You</div>
+  <div class="header-center">
+    <h1>🪔 Campus Vesak Zone 2026</h1>
+    <p>Live Multiplayer Map</p>
+  </div>
+  <div class="online-badge">
+    <div class="online-dot"></div><span id="online-count">1 online</span>
+  </div>
+</header>
+
+<!-- Ticker -->
+<div class="ticker" id="ticker" style="display:none">
+  <div class="ticker-inner">
+    🌸 Welcome to the Vesak Festival &nbsp;·&nbsp; 🕯️ Light a lamp of peace &nbsp;·&nbsp; 🏮 Explore the pandols and dansalas &nbsp;·&nbsp; 🙏 Sadu! Sadu! Sadu! &nbsp;·&nbsp; 🌟 Walk the path of the Dhamma &nbsp;·&nbsp; 🌸 Welcome to the Vesak Festival &nbsp;·&nbsp;
+  </div>
+</div>
+
+<!-- Map -->
+<div id="map-wrap" style="display:none">
+  <canvas id="map-canvas"></canvas>
+  <!-- POI markers (injected by JS) -->
+</div>
+
+<!-- Controls hint -->
+<div class="controls-hint" id="ctrl-hint" style="display:none">
+  <span class="key">▲</span>
+  <span class="key">◀</span>
+  <span class="key">▼</span>
+  <span class="key">▶</span>
+  &nbsp; Move &nbsp;·&nbsp; Click glowing markers to explore
+</div>
+
+<!-- D-Pad for mobile -->
+<div id="dpad" style="display:none">
+  <div class="dpad-grid">
+    <button class="db dup" data-dir="up">▲</button>
+    <button class="db dleft" data-dir="left">◀</button>
+    <button class="db dright" data-dir="right">▶</button>
+    <button class="db ddown" data-dir="down">▼</button>
+  </div>
+</div>
+
+<!-- Online List Panel -->
+<div id="pp" style="display:none">
+  <h4>🟢 Online Now</h4>
+  <div id="pp-list"></div>
+</div>
+
+<!-- Login screen overlay -->
 <div id="login-screen">
   <div class="login-card">
     <div class="lc-icon">🪔</div>
@@ -316,65 +939,22 @@ body {
 
     <label class="lc-label">Gender</label>
     <div class="gender-row">
-      <button class="gender-btn" id="btn-male"   onclick="selectGender('male')">👨<span>Man</span></button>
-      <button class="gender-btn" id="btn-female" onclick="selectGender('female')">👩<span>Woman</span></button>
+      <button type="button" class="gender-btn" id="btn-m" onclick="selectGender('male')">👨<span>Man</span></button>
+      <button type="button" class="gender-btn" id="btn-f" onclick="selectGender('female')">👩<span>Woman</span></button>
     </div>
 
-    <label class="lc-label">Choose Avatar</label>
-    <div class="avatar-grid" id="avatar-grid"></div>
+    <label class="lc-label">Choose Your Avatar</label>
+    <div class="avatar-grid" id="av-grid"></div>
 
-    <button class="lc-btn" id="enter-btn" onclick="enterMap()" disabled>Enter the Festival →</button>
+    <button type="button" class="lc-btn" id="enter-btn" onclick="enterMap()" disabled>Enter the Festival →</button>
   </div>
 </div>
 
-<!-- ═══════════════════════ HEADER ═════════════════════════════ -->
-<header class="header" id="main-header" style="display:none">
-  <div class="my-badge" id="my-badge">🪔 You</div>
-  <div class="header-center">
-    <h1>🪔 Campus Vesak Zone 2026</h1>
-    <p>Live Interactive Map</p>
-  </div>
-  <div class="online-badge"><div class="online-dot"></div><span id="online-count">1 online</span></div>
-</header>
-
-<!-- ═══════════════════════ TICKER ══════════════════════════════ -->
-<div class="ticker" id="ticker" style="display:none">
-  <div class="ticker-inner">🌸 Welcome to the Vesak Festival &nbsp;·&nbsp; 🕯️ Light a lamp of peace &nbsp;·&nbsp; 🏮 Explore the pandols and dansalas &nbsp;·&nbsp; 🙏 Sadu! Sadu! Sadu! &nbsp;·&nbsp; 🌟 Walk the path of the Dhamma &nbsp;·&nbsp; 🌸 Welcome to the Vesak Festival &nbsp;·&nbsp;</div>
-</div>
-
-<!-- ═══════════════════════ MAP ════════════════════════════════ -->
-<div id="map-wrap" style="display:none">
-  <canvas id="map-canvas"></canvas>
-  <!-- player tokens injected by JS -->
-</div>
-
-<!-- ═══════════════════════ CONTROLS ══════════════════════════ -->
-<div class="controls-hint" id="controls-hint" style="display:none">
-  <span class="key">▲</span><span class="key">◀</span><span class="key">▼</span><span class="key">▶</span>
-  &nbsp; Move &nbsp;·&nbsp; Click glowing markers to explore
-</div>
-
-<!-- ═══════════════════════ D-PAD ═════════════════════════════ -->
-<div id="dpad" style="display:none">
-  <div class="dpad-grid">
-    <button class="dpad-btn dpad-up"    data-dir="up">▲</button>
-    <button class="dpad-btn dpad-left"  data-dir="left">◀</button>
-    <button class="dpad-btn dpad-right" data-dir="right">▶</button>
-    <button class="dpad-btn dpad-down"  data-dir="down">▼</button>
-  </div>
-</div>
-
-<!-- ═══════════════════════ PLAYERS PANEL ═════════════════════ -->
-<div id="players-panel" style="display:none">
-  <h4>🟢 Online Now</h4>
-  <div id="pp-list"></div>
-</div>
-
-<!-- ═══════════════════════ MODAL ══════════════════════════════ -->
+<!-- Modal -->
 <div id="modal-overlay">
   <div id="modal-box">
     <div id="modal-img-wrap">
-      <img id="modal-img" src="" alt="" style="display:none">
+      <img id="modal-img" src="" alt="">
       <div class="img-overlay"></div>
       <div class="img-emoji" id="modal-emoji"></div>
     </div>
@@ -390,452 +970,993 @@ body {
   </div>
 </div>
 
-<!-- ═══════════════════════ SCRIPT ════════════════════════════ -->
 <script>
-// ══════════════════════════════════════════════════════════
-//  AVATAR DEFINITIONS
-// ══════════════════════════════════════════════════════════
+// ============================================================
+//  MAP CONFIGURATION  — edit this section freely!
+// ============================================================
+const MAP_W = 900;
+const MAP_H = 700;
+
+// Road/path polygons: each is an array of [x,y] segments (drawn as filled rectangles)
+// Format: { x, y, w, h, type: 'h'|'v'|'d' }
+const ROADS = [
+  // Main vertical road (left spine — Mansiylen)
+  { x: 80, y: 66, w: 40, h: MAP_H },
+  // Main horizontal road (top entry)
+  { x: 80, y: 70, w: MAP_W - 200, h: 36 },
+  // Central vertical road (middle)
+  { x: 390, y: 70, w: 36, h: MAP_H - 70 },
+  // Right vertical road (Applied side)
+  { x: 760, y: 400, w: 36, h: MAP_H - 90 },
+  // Bottom horizontal road (entry area)
+  { x: 425, y: MAP_H - 50, w: 338, h: 36 }, 
+  // Horizontal connecting road (between 167, 470 and 368, 470)
+  { x: 120, y: 470, w: 270, h: 36 },
+  // Horizontal connecting road between Dansala and Temple (centered at y: 326)
+  { x: 120, y: 308, w: 270, h: 36 },
+  // Horizontal connecting road from central road to the right side (centered at y: 368)
+  { x: 426, y: 350, w: 334, h: 36 },
+];
+
+// Buildings: { x, y, w, h, label, color }
+const BUILDINGS = [];
+
+// Points of Interest
+const POIS = [
+  {
+    id: "pandol",
+    x: 260, y: 150,
+    emoji: "🌳",
+    color: "#f5c842",
+    label: "KASE",
+    tag: "KASE Center",
+    title: "KASE",
+    desc: "The beautiful KASE center grounds are decorated with traditional palm leaves, oil lamps, and a majestic glowing Bodhi tree at the heart.",
+    img: "",
+    imgEmoji: "🌳",
+  },
+  {
+    id: "dansala",
+    x: 260, y: 250,
+    emoji: "🍚",
+    color: "#69f0ae",
+    label: "Open Canteen",
+    tag: "Dana / Charity",
+    title: "Open Canteen",
+    desc: "A spirit of generosity fills the Open Canteen area as the Vesak Dansala serves free traditional Sri Lankan meals — kiribath, milk rice, fruit, and herbal drinks — to all visitors, embodying the Buddhist value of Dāna (giving).",
+    img: "",
+    imgEmoji: "🍚",
+  },
+  {
+    id: "lanterns",
+    x: 490, y: 200,
+    emoji: "🪔",
+    color: "#ce93d8",
+    label: "Lantern Exhibition",
+    tag: "Vesak Koodu",
+    title: "Lantern Exhibition Hall",
+    desc: "Students from the Faculty of Computing have crafted stunning handmade Vesak lanterns of every shape — stars, lotus flowers, dharma wheels, and more. Walk through the corridor of light and marvel at the creativity and devotion on display.",
+    img: "",
+    imgEmoji: "🪔",
+  },
+  {
+    id: "shramadana",
+    x: 490, y: 490,
+    emoji: "🤝",
+    color: "#4fc3f7",
+    label: "Shramadana Zone",
+    tag: "Community Work",
+    title: "Shramadana Area",
+    desc: "The Shramadana (voluntary community work) zone in Sumansala grounds brings the campus together. Planting Bodhi saplings, cleaning pathways, and painting Vesak decorations — united in the spirit of selfless service.",
+    img: "",
+    imgEmoji: "🤝",
+  },
+  {
+    id: "temple",
+    x: 245, y: 400,
+    emoji: "🙏",
+    color: "#ff6eb4",
+    label: "Campus Temple",
+    tag: "Sacred Space",
+    title: "Campus Temple",
+    desc: "The serene campus temple is adorned with jasmine garlands and hundreds of flickering oil lamps. A peaceful sanctuary for prayer and meditation during the Vesak full moon night.",
+    img: "",
+    imgEmoji: "🙏",
+  },
+  {
+    id: "library",
+    x: 40, y: 520,
+    emoji: "📚",
+    color: "#4fc3f7",
+    label: "Campus Library",
+    title: "Campus Library",
+    desc: "The campus library is adorned with beautiful paper stars and hanging lotus lanterns, glowing softly in the quiet night.",
+    img: "",
+    imgEmoji: "📚",
+  },
+  {
+    id: "applied",
+    x: 785, y: 370,
+    emoji: "🔬",
+    color: "#ff6eb4",
+    label: "Applied Sciences",
+    title: "Faculty of Applied Sciences",
+    desc: "The Applied Sciences department entrance is lit up with colorful traditional Vesak buckets and palm leaf crafts.",
+    img: "",
+    imgEmoji: "🔬",
+  },
+  {
+    id: "postgrad",
+    x: 95, y: 40,
+    emoji: "🎓",
+    color: "#aed581",
+    label: "Post Grad Faculty",
+    title: "Post Graduate Center",
+    desc: "The postgraduate building looks serene under a canopy of warm yellow lights and calming white lanterns.",
+    img: "",
+    imgEmoji: "🎓",
+  },
+  {
+    id: "computing",
+    x: 260, y: 40,
+    emoji: "💻",
+    color: "#ce93d8",
+    label: "Computing Faculty",
+    title: "Faculty of Computing",
+    desc: "Computing students have put up an amazing, tech-integrated creative lantern display.",
+    img: "",
+    imgEmoji: "💻",
+  },
+  {
+    id: "humanity",
+    x: 420, y: 40,
+    emoji: "🎨",
+    color: "#ff8a65",
+    label: "Humanities Faculty",
+    title: "Faculty of Humanities",
+    desc: "Beautiful traditional Vesak drawings and handmade palm-leaf decorations line the corridors here.",
+    img: "",
+    imgEmoji: "🎨",
+  },
+  {
+    id: "reshels",
+    x: 665, y: 40,
+    emoji: "☕",
+    color: "#ffb347",
+    label: "Reshels Canteen",
+    title: "Reshels Canteen",
+    desc: "Serving warm traditional herbal drinks, tea, and sweetmeats to all festival visitors.",
+    img: "",
+    imgEmoji: "☕",
+  },
+  {
+    id: "mgt_faculty_1",
+    x: 40, y: 390,
+    emoji: "🏛️",
+    color: "#ffb347",
+    label: "Management Faculty",
+    title: "Management Faculty Building",
+    desc: "The main Management Faculty building is decorated with beautiful paper lanterns and glows warmly under the night sky.",
+    img: "",
+    imgEmoji: "🏛️",
+  },
+  {
+    id: "mgt_faculty_2",
+    x: 40, y: 211,
+    emoji: "🏢",
+    color: "#4fc3f7",
+    label: "New Management Building",
+    title: "New Management Building",
+    desc: "The newly built Management building is illuminated with modern neon-blue lights and traditional decorations for the festival.",
+    img: "",
+    imgEmoji: "🏢",
+  },
+  {
+    id: "buddhist_flag_zone",
+    x: 570, y: 610,
+    emoji: "☸️",
+    color: "#ff6eb4",
+    label: "Buddhist Flag Display",
+    tag: "Cultural Display",
+    title: "Buddhist Flag Zone",
+    desc: "A beautiful display of the six-colored Buddhist flag, representing peace, wisdom, and the light of Dhamma surrounding the campus.",
+    img: "",
+    imgEmoji: "☸️",
+  },
+  {
+    id: "entrance_2",
+    x: 99, y: 670,
+    emoji: "🟢",
+    color: "#69f0ae",
+    label: "Entrance 2",
+    tag: "Entry Point",
+    title: "Entrance 2",
+    desc: "Secondary gate entrance to the campus Vesak Zone, illuminated with beautiful green lanterns to welcome all visitors.",
+    img: "",
+    imgEmoji: "🟢",
+  },
+  {
+    id: "entrance_3",
+    x: 99, y: 490,
+    emoji: "🟢",
+    color: "#69f0ae",
+    label: "Entrance 3",
+    tag: "Entry Point",
+    title: "Entrance 2",
+    desc: "Secondary gate entrance to the campus Vesak Zone, illuminated with beautiful green lanterns to welcome all visitors.",
+    img: "",
+    imgEmoji: "🟢",
+  },
+  {
+    id: "entrance_4",
+    x: 410, y: 490,
+    emoji: "🟢",
+    color: "#69f0ae",
+    label: "Entrance 2",
+    tag: "Entry Point",
+    title: "Entrance 2",
+    desc: "Secondary gate entrance to the campus Vesak Zone, illuminated with beautiful green lanterns to welcome all visitors.",
+    img: "",
+    imgEmoji: "🟢",
+  },
+  {
+    id: "main_entrance",
+    x: 405, y: 670,
+    emoji: "🟢",
+    color: "#69f0ae",
+    label: "Main Entrance",
+    tag: "Entry Point",
+    title: "Main Entrance",
+    desc: "The grand Main Entrance to the campus Vesak Zone. Adorned with massive glowing pandols, stars, and bright green lights welcoming thousands of devotees.",
+    img: "",
+    imgEmoji: "🟢",
+  },
+  {
+  id: "center_point",
+  x: 250,
+  y: 595,
+  emoji: "✨",
+  color: "#ffd54f",
+  label: "Central Area",
+  tag: "Main Spot",
+  title: "Campus Vesak Center",
+  desc: "The central gathering point connecting all entrances of the Vesak Zone with beautiful lights, decorations, and walking paths.",
+  img: "",
+  imgEmoji: "✨",
+},
+  {
+    id: "applied_sci_faculty",
+    x: 800, y: 90,
+    emoji: "🔬",
+    color: "#4fc3f7",
+    label: "Applied Sciences",
+    tag: "Faculty",
+    title: "Faculty of Applied Sciences",
+    desc: "The pristine department building for the Faculty of Applied Sciences, lit up with peaceful lights for the Vesak festival.",
+    img: "",
+    imgEmoji: "🔬",
+  },
+  {
+    id: "ahala_wala_theater",
+    x: 840, y: 540,
+    emoji: "🎭",
+    color: "#ff6eb4",
+    label: "Ahala Wala (Theater)",
+    tag: "Theater / Arts",
+    title: "Ahala Wala Open Theater",
+    desc: "The legendary Ahala Wala Open Theater, hosting traditional dramas, puppet shows, and Vesak devotional singing under the stars.",
+    img: "",
+    imgEmoji: "🎭",
+  },
+  {
+    id: "foc_thorana",
+    x: 590, y: 325,
+    emoji: "🏮",
+    color: "#f5c842",
+    label: "FOC Thorana",
+    tag: "Thorana / Pandol",
+    title: "FOC Vesak Pandol (Thorana)",
+    desc: "The majestic Faculty of Computing Vesak Pandol stands tall at the junction, glowing brilliantly with thousands of animated lights depicting sacred Buddhist stories.",
+    img: "",
+    imgEmoji: "🏮",
+  }
+];
+
+// Street lights: [x, y, type ('gold'|'blue')]
+const STREET_LIGHTS = [
+  // --- Main Vertical Road (Left Spine) ---
+  [65, 60, 'gold'],
+  [135, 140, 'gold'],
+  [65, 220, 'gold'],
+  [135, 300, 'gold'],
+  [65, 380, 'gold'],
+  [135, 460, 'gold'],
+  [65, 540, 'gold'],
+  [135, 620, 'gold'],
+
+  // --- Main Horizontal Road (Top Entry) ---
+  [140, 55, 'gold'],
+  [300, 55, 'gold'],
+  [460, 55, 'gold'],
+  [620, 55, 'gold'],
+  [220, 120, 'gold'],
+  [380, 120, 'gold'],
+  [540, 120, 'gold'],
+  [700, 120, 'gold'],
+
+  // --- Central Vertical Road (Middle) ---
+  [375, 140, 'gold'],
+  [375, 300, 'gold'],
+  [375, 460, 'gold'],
+  [375, 620, 'gold'],
+  [440, 220, 'gold'],
+  [440, 380, 'gold'],
+  [440, 540, 'gold'],
+  [440, 700, 'gold'],
+
+  // --- Right Vertical Road (Applied Side) ---
+  [745, 140, 'gold'],
+  [745, 300, 'gold'],
+  [745, 460, 'gold'],
+  [745, 620, 'gold'],
+  [810, 220, 'gold'],
+  [810, 380, 'gold'],
+  [810, 540, 'gold'],
+
+  // --- Bottom Horizontal Road ---
+  [140, 655, 'gold'],
+  [300, 655, 'gold'],
+  [460, 655, 'gold'],
+  [620, 655, 'gold'],
+  [220, 720, 'gold'],
+  [380, 720, 'gold'],
+  [540, 720, 'gold'],
+  [700, 720, 'gold'],
+
+  // --- New Horizontal Connecting Road (y: 470) ---
+  [180, 444, 'gold'],
+  [300, 444, 'gold'],
+  [240, 496, 'gold'],
+  [360, 496, 'gold'],
+
+  // --- New Diagonal Road (393, 666 to 137, 543) ---
+  [355, 614, 'gold'],
+  [252, 565, 'gold'],
+  [278, 644, 'gold'],
+  [175, 595, 'gold'],
+
+  // --- Horizontal Connecting Road between Dansala & Temple (y: 326) ---
+  [180, 300, 'gold'],
+  [300, 300, 'gold'],
+  [240, 352, 'gold'],
+  [360, 352, 'gold'],
+
+  // --- Horizontal Connecting Road to Right Side (y: 368) ---
+  [480, 332, 'gold'],
+  [620, 332, 'gold'],
+  [550, 404, 'gold'],
+  [690, 404, 'gold']
+];
+
+// Lanterns: [x, y, color]
+const LANTERNS = [
+  // --- Main Vertical Road (Left Spine) ---
+  [135, 60, '#f5c842'],
+  [65, 140, '#ff6eb4'],
+  [135, 220, '#69f0ae'],
+  [65, 300, '#ce93d8'],
+  [135, 380, '#4fc3f7'],
+  [65, 460, '#f5c842'],
+  [135, 540, '#ff6eb4'],
+  [65, 620, '#69f0ae'],
+
+  // --- Main Horizontal Road (Top Entry) ---
+  [220, 55, '#ce93d8'],
+  [380, 55, '#f5c842'],
+  [540, 55, '#69f0ae'],
+  [700, 55, '#4fc3f7'],
+  [140, 120, '#69f0ae'],
+  [300, 120, '#4fc3f7'],
+  [460, 120, '#ff6eb4'],
+  [620, 120, '#ce93d8'],
+
+  // --- Central Vertical Road (Middle) ---
+  [440, 140, '#f5c842'],
+  [440, 300, '#69f0ae'],
+  [440, 460, '#4fc3f7'],
+  [440, 620, '#ff6eb4'],
+  [375, 220, '#ff6eb4'],
+  [375, 380, '#ce93d8'],
+  [375, 540, '#f5c842'],
+  [375, 700, '#69f0ae'],
+
+  // --- Right Vertical Road (Applied Side) ---
+  [810, 140, '#69f0ae'],
+  [810, 300, '#4fc3f7'],
+  [810, 460, '#ff6eb4'],
+  [810, 620, '#ce93d8'],
+  [745, 220, '#ce93d8'],
+  [745, 380, '#f5c842'],
+  [745, 540, '#69f0ae'],
+
+  // --- Bottom Horizontal Road ---
+  [220, 655, '#4fc3f7'],
+  [380, 655, '#ff6eb4'],
+  [540, 655, '#ce93d8'],
+  [700, 655, '#f5c842'],
+  [140, 720, '#ce93d8'],
+  [300, 720, '#f5c842'],
+  [460, 720, '#69f0ae'],
+  [620, 720, '#4fc3f7'],
+
+  // --- New Horizontal Connecting Road (y: 470) ---
+  [180, 508, '#ff6eb4'],
+  [300, 508, '#ce93d8'],
+  [240, 432, '#69f0ae'],
+  [360, 432, '#4fc3f7'],
+
+  // --- New Diagonal Road (393, 666 to 137, 543) ---
+  [329, 668, '#ce93d8'],
+  [226, 619, '#69f0ae'],
+  [299, 590, '#ff6eb4'],
+  [201, 541, '#4fc3f7'],
+
+  // --- Horizontal Connecting Road between Dansala & Temple (y: 326) ---
+  [180, 364, '#ff6eb4'],
+  [300, 364, '#ce93d8'],
+  [240, 288, '#69f0ae'],
+  [360, 288, '#4fc3f7'],
+
+  // --- Horizontal Connecting Road to Right Side (y: 368) ---
+  [480, 404, '#ff6eb4'],
+  [620, 404, '#ce93d8'],
+  [550, 332, '#69f0ae'],
+  [690, 332, '#4fc3f7']
+];
+
+// Oil lamps (pahan) [x, y]
+const PAHANS = [];
+
+// Building labels positions
+const BLDLABELS = [
+  { x: 245, y: 156, text: "KASE" },
+  { x: 245, y: 265, text: "Open\nCanteen" },
+  { x: 245, y: 374, text: "Temple" },
+  { x: 580, y: 191, text: "Faculty of\nComputing" },
+  { x: 580, y: 505, text: "Sumansala" },
+  { x: 40,  y: 33,  text: "Post\nGrad" },
+];
+
+// ============================================================
+//  DRAW MAP ON CANVAS
+// ============================================================
+const canvas = document.getElementById('map-canvas');
+const ctx = canvas.getContext('2d');
+canvas.width = MAP_W;
+canvas.height = MAP_H;
+
+function hexToRgba(hex, a) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+function drawMap() {
+  // Background
+  const bg = ctx.createLinearGradient(0, 0, MAP_W, MAP_H);
+  bg.addColorStop(0, '#050f20');
+  bg.addColorStop(1, '#040c18');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, MAP_W, MAP_H);
+
+  // Subtle grid
+  ctx.strokeStyle = 'rgba(30,60,100,0.18)';
+  ctx.lineWidth = 1;
+  for (let x = 0; x < MAP_W; x += 40) {
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, MAP_H); ctx.stroke();
+  }
+  for (let y = 0; y < MAP_H; y += 40) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(MAP_W, y); ctx.stroke();
+  }
+
+  // 1. Draw all road glows first
+  ROADS.forEach(r => {
+    ctx.fillStyle = 'rgba(30,60,120,0.18)';
+    ctx.fillRect(r.x - 8, r.y - 8, r.w + 16, r.h + 16);
+  });
+
+  // 2. Draw all road fills to merge them seamlessly
+  ROADS.forEach(r => {
+    ctx.fillStyle = '#1a2a4a';
+    ctx.fillRect(r.x, r.y, r.w, r.h);
+  });
+
+  // 3. Draw edge lines and dashed lines
+  ROADS.forEach(r => {
+    // Road edge lines
+    ctx.strokeStyle = 'rgba(80,130,220,0.25)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(r.x, r.y, r.w, r.h);
+    // Dashed center line for wide roads
+    if (r.w > 100 || r.h > 100) {
+      ctx.setLineDash([12, 10]);
+      ctx.strokeStyle = 'rgba(245,200,66,0.12)';
+      ctx.lineWidth = 1.5;
+      if (r.w > r.h) {
+        const cy = r.y + r.h / 2;
+        ctx.beginPath(); ctx.moveTo(r.x, cy); ctx.lineTo(r.x + r.w, cy); ctx.stroke();
+      } else {
+        const cx = r.x + r.w / 2;
+        ctx.beginPath(); ctx.moveTo(cx, r.y); ctx.lineTo(cx, r.y + r.h); ctx.stroke();
+      }
+      ctx.setLineDash([]);
+    }
+  });
+
+  // Buildings
+  BUILDINGS.forEach(b => {
+    // Shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.4)';
+    ctx.fillRect(b.x + 4, b.y + 4, b.w, b.h);
+    // Fill
+    const grad = ctx.createLinearGradient(b.x, b.y, b.x + b.w, b.y + b.h);
+    grad.addColorStop(0, b.color);
+    grad.addColorStop(1, hexToRgba(b.color, 0.7));
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.roundRect(b.x, b.y, b.w, b.h, 6);
+    ctx.fill();
+    // Border
+    ctx.strokeStyle = 'rgba(60,120,210,0.35)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.roundRect(b.x, b.y, b.w, b.h, 6);
+    ctx.stroke();
+    // Window dots
+    ctx.fillStyle = 'rgba(150,210,255,0.15)';
+    for (let wx = b.x + 14; wx < b.x + b.w - 10; wx += 20) {
+      for (let wy = b.y + 14; wy < b.y + b.h - 10; wy += 20) {
+        ctx.fillRect(wx, wy, 8, 5);
+      }
+    }
+  });
+
+  // --- High-Fidelity Diagonal Road (from 393, 666 to 137, 543) ---
+  // A. Glow
+  ctx.save();
+  ctx.strokeStyle = 'rgba(30, 60, 120, 0.18)';
+  ctx.lineWidth = 36 + 16;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(393, 666);
+  ctx.lineTo(137, 543);
+  ctx.stroke();
+  ctx.restore();
+
+  // B. Solid Fill
+  ctx.save();
+  ctx.strokeStyle = '#1a2a4a';
+  ctx.lineWidth = 36;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(393, 666);
+  ctx.lineTo(137, 543);
+  ctx.stroke();
+  ctx.restore();
+
+  // C. Parallel Borders & Center Dashed Line
+  ctx.save();
+  ctx.strokeStyle = 'rgba(80, 130, 220, 0.25)';
+  ctx.lineWidth = 1;
+  ctx.lineCap = 'round';
+
+  const diagDx = 137 - 393;
+  const diagDy = 543 - 666;
+  const diagLen = Math.sqrt(diagDx * diagDx + diagDy * diagDy);
+  const diagNx = -diagDy / diagLen; // Normal vector X
+  const diagNy = diagDx / diagLen;  // Normal vector Y
+
+  // Draw Left Edge Border
+  ctx.beginPath();
+  ctx.moveTo(393 + diagNx * 18, 666 + diagNy * 18);
+  ctx.lineTo(137 + diagNx * 18, 543 + diagNy * 18);
+  ctx.stroke();
+
+  // Draw Right Edge Border
+  ctx.beginPath();
+  ctx.moveTo(393 - diagNx * 18, 666 - diagNy * 18);
+  ctx.lineTo(137 - diagNx * 18, 543 - diagNy * 18);
+  ctx.stroke();
+
+  // Draw Dashed Center Line
+  ctx.setLineDash([12, 10]);
+  ctx.strokeStyle = 'rgba(245, 200, 66, 0.12)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(393, 666);
+  ctx.lineTo(137, 543);
+  ctx.stroke();
+  ctx.restore();
+
+  // Canvas styling clean setup
+}
+
+// ============================================================
+//  INJECT DOM DECORATIONS
+// ============================================================
+const mapWrap = document.getElementById('map-wrap');
+
+function pct(val, total) { return (val / total * 100).toFixed(3) + '%'; }
+
+// Street lights
+STREET_LIGHTS.forEach(([x, y, type]) => {
+  const el = document.createElement('div');
+  el.className = `street-light ${type}`;
+  el.style.left = pct(x, MAP_W);
+  el.style.top  = pct(y, MAP_H);
+  mapWrap.appendChild(el);
+});
+
+// Lanterns
+LANTERNS.forEach(([x, y, color]) => {
+  const el = document.createElement('div');
+  el.className = 'lantern';
+  el.style.left = pct(x, MAP_W);
+  el.style.top  = pct(y, MAP_H);
+  el.innerHTML = `
+    <svg viewBox="0 0 22 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="11" y1="0" x2="11" y2="5" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+      <ellipse cx="11" cy="7" rx="5" ry="2.5" fill="${color}" opacity="0.9"/>
+      <path d="M6 7 Q4 15 6 21 Q11 24 16 21 Q18 15 16 7Z" fill="${color}" opacity="0.85"/>
+      <path d="M6 7 Q9 10 11 14 Q13 10 16 7" stroke="rgba(255,255,255,0.2)" stroke-width="0.5" fill="none"/>
+      <ellipse cx="11" cy="21" rx="5" ry="2" fill="${color}" opacity="0.9"/>
+      <ellipse cx="11" cy="14" rx="3.5" ry="4" fill="rgba(255,255,255,0.18)"/>
+      <path d="M9 23 Q11 27 13 23" stroke="${color}" stroke-width="1" fill="none" opacity="0.7"/>
+      <filter id="f"><feGaussianBlur stdDeviation="2"/></filter>
+      <ellipse cx="11" cy="14" rx="6" ry="7" fill="${color}" opacity="0.12" filter="url(#f)"/>
+    </svg>`;
+  mapWrap.appendChild(el);
+});
+
+// Oil lamps
+PAHANS.forEach(([x, y]) => {
+  const el = document.createElement('div');
+  el.className = 'pahan';
+  el.style.left = pct(x, MAP_W);
+  el.style.top  = pct(y, MAP_H);
+  mapWrap.appendChild(el);
+});
+
+// POIs
+POIS.forEach(poi => {
+  const el = document.createElement('div');
+  el.className = 'poi-marker';
+  el.id = 'poi-' + poi.id;
+  el.style.left = pct(poi.x, MAP_W);
+  el.style.top  = pct(poi.y, MAP_H);
+  el.innerHTML = `
+    <div class="poi-inner" style="background:radial-gradient(circle,${hexToRgbaJs(poi.color,0.25)} 0%,${hexToRgbaJs(poi.color,0.05)} 100%);border:1.5px solid ${hexToRgbaJs(poi.color,0.6)};--poi-pulse:${hexToRgbaJs(poi.color,0.3)}">
+      ${poi.emoji}
+    </div>
+    <div class="poi-label">${poi.label}</div>`;
+  el.addEventListener('click', () => openModal(poi));
+  mapWrap.appendChild(el);
+});
+
+function hexToRgbaJs(hex, a) {
+  if (hex.startsWith('#')) {
+    const r = parseInt(hex.slice(1,3),16);
+    const g = parseInt(hex.slice(3,5),16);
+    const b = parseInt(hex.slice(5,7),16);
+    return `rgba(${r},${g},${b},${a})`;
+  }
+  return hex;
+}
+
+// ============================================================
+//  DRAW
+// ============================================================
+drawMap();
+
+// ============================================================
+//  AVATARS & MULTIPLAYER STATE
+// ============================================================
 const AVATARS = {
   male: [
-    { id:'m1', emoji:'👨', name:'Dasun',    color:'#4fc3f7' },
-    { id:'m2', emoji:'👦', name:'Kavith',   color:'#69f0ae' },
-    { id:'m3', emoji:'🧑', name:'Nuwan',    color:'#ce93d8' },
-    { id:'m4', emoji:'👲', name:'Sampath',  color:'#f5c842' },
-    { id:'m5', emoji:'🧔', name:'Primal',   color:'#ff8a65' },
-    { id:'m6', emoji:'👴', name:'Seeya',    color:'#80cbc4' },
-    { id:'m7', emoji:'🕵️', name:'Rashan',   color:'#b0bec5' },
-    { id:'m8', emoji:'🧑‍🎓', name:'Student', color:'#aed581' },
+    { id: 'm1', emoji: '👨', name: 'Dasun', color: '#4fc3f7' },
+    { id: 'm2', emoji: '👦', name: 'Kavith', color: '#69f0ae' },
+    { id: 'm3', emoji: '🧑', name: 'Nuwan', color: '#ce93d8' },
+    { id: 'm4', emoji: '👲', name: 'Sampath', color: '#f5c842' },
+    { id: 'm5', emoji: '🧔', name: 'Primal', color: '#ff8a65' },
+    { id: 'm6', emoji: '👴', name: 'Seeya', color: '#80cbc4' },
+    { id: 'm7', emoji: '🕵️', name: 'Rashan', color: '#b0bec5' },
+    { id: 'm8', emoji: '🧑‍🎓', name: 'Student', color: '#aed581' },
   ],
   female: [
-    { id:'f1', emoji:'👩', name:'Sachini',  color:'#ff6eb4' },
-    { id:'f2', emoji:'👧', name:'Nimasha',  color:'#f48fb1' },
-    { id:'f3', emoji:'🧒', name:'Thilini',  color:'#ce93d8' },
-    { id:'f4', emoji:'👸', name:'Malsha',   color:'#f5c842' },
-    { id:'f5', emoji:'🧕', name:'Fathima',  color:'#80deea' },
-    { id:'f6', emoji:'👵', name:'Achchi',   color:'#bcaaa4' },
-    { id:'f7', emoji:'🧑‍🏫', name:'Teacher', color:'#a5d6a7' },
-    { id:'f8', emoji:'🧝‍♀️','name':'Fairy',  color:'#b39ddb' },
+    { id: 'f1', emoji: '👩', name: 'Sachini', color: '#ff6eb4' },
+    { id: 'f2', emoji: '👧', name: 'Nimasha', color: '#f48fb1' },
+    { id: 'f3', emoji: '🧒', name: 'Thilini', color: '#ce93d8' },
+    { id: 'f4', emoji: '👸', name: 'Malsha', color: '#f5c842' },
+    { id: 'f5', emoji: '🧕', name: 'Fathima', color: '#80deea' },
+    { id: 'f6', emoji: '👵', name: 'Achchi', color: '#bcaaa4' },
+    { id: 'f7', emoji: '🧑‍🏫', name: 'Teacher', color: '#a5d6a7' },
+    { id: 'f8', emoji: '🧝‍♀️', name: 'Fairy', color: '#b39ddb' },
   ]
 };
 
-// ══════════════════════════════════════════════════════════
-//  MAP DATA
-// ══════════════════════════════════════════════════════════
-const MAP_W = 900, MAP_H = 700;
-
-const ROADS = [
-  { x:80,  y:0,        w:40,       h:MAP_H },
-  { x:80,  y:70,       w:MAP_W-80, h:36    },
-  { x:390, y:70,       w:36,       h:MAP_H-70 },
-  { x:760, y:70,       w:36,       h:MAP_H-70 },
-  { x:80,  y:MAP_H-50, w:700,      h:36    },
-];
-const BUILDINGS = [
-  { x:120, y:106, w:250, h:100, color:'#0e2244' },
-  { x:120, y:220, w:250, h:90,  color:'#0a1e30' },
-  { x:120, y:324, w:250, h:100, color:'#1a0e2e' },
-  { x:430, y:106, w:300, h:170, color:'#0e2033' },
-  { x:430, y:380, w:300, h:250, color:'#0d1e35' },
-  { x:0,   y:0,   w:76,  h:66,  color:'#0a1828' },
-];
-const COLLISION_ZONES = [
-  { x:120, y:106, w:250, h:100 },
-  { x:120, y:220, w:250, h:90  },
-  { x:120, y:324, w:250, h:100 },
-  { x:430, y:106, w:300, h:170 },
-  { x:430, y:380, w:300, h:250 },
-  { x:0,   y:0,   w:76,  h:66  },
-];
-const STREET_LIGHTS = [
-  [100,90,'gold'],[100,180,'gold'],[100,270,'gold'],[100,360,'gold'],[100,450,'gold'],[100,560,'gold'],
-  [200,90,'blue'],[300,90,'blue'],[400,90,'blue'],[500,90,'blue'],[600,90,'blue'],[700,90,'blue'],
-  [410,180,'gold'],[410,280,'gold'],[410,380,'gold'],[410,480,'gold'],[410,580,'gold'],
-  [780,180,'blue'],[780,280,'blue'],[780,380,'blue'],[780,480,'blue'],
-];
-const LANTERNS = [
-  [155,85,'#f5c842'],[175,85,'#ff6eb4'],[215,85,'#69f0ae'],[235,85,'#ce93d8'],
-  [275,85,'#4fc3f7'],[315,85,'#f5c842'],[355,85,'#ff6eb4'],
-  [455,85,'#69f0ae'],[475,85,'#ce93d8'],[515,85,'#4fc3f7'],
-  [555,85,'#f5c842'],[595,85,'#ff6eb4'],[635,85,'#69f0ae'],
-  [680,85,'#ce93d8'],[720,85,'#4fc3f7'],
-  [100,150,'#f5c842'],[100,230,'#ff6eb4'],[100,310,'#69f0ae'],
-  [100,395,'#ce93d8'],[100,475,'#4fc3f7'],[100,555,'#f5c842'],
-];
-const PAHANS = [
-  [140,105],[160,105],[180,105],[200,105],[220,105],
-  [140,216],[160,216],[180,216],[200,216],
-  [140,320],[160,320],[180,320],[200,320],
-  [435,105],[455,105],[475,105],[495,105],[515,105],
-  [435,276],[455,276],[475,276],
-  [435,376],[455,376],[475,376],
-  [200,650],[240,650],[280,650],[320,650],[360,650],
-  [430,650],[470,650],[510,650],[550,650],
-];
-const POIS = [
-  { id:'pandol',   x:260, y:180, emoji:'🏮', color:'#f5c842', label:'Main Vesak Pandol', tag:'Thorana / Pandol', title:'Main Vesak Pandol', desc:'The magnificent Main Vesak Pandol stands at the heart of the campus, depicting the sacred Jataka tales through thousands of glowing LED lights.', img:'', imgEmoji:'🏮' },
-  { id:'dansala',  x:260, y:278, emoji:'🍚', color:'#69f0ae', label:'Dansala',            tag:'Dana / Charity',  title:'Vesak Dansala',     desc:'A spirit of generosity fills the Open Canteen as the Dansala serves free traditional Sri Lankan meals — kiribath, fruit, and herbal drinks — to all visitors.', img:'', imgEmoji:'🍚' },
-  { id:'lanterns', x:490, y:160, emoji:'🪔', color:'#ce93d8', label:'Lantern Exhibition', tag:'Vesak Koodu',     title:'Lantern Exhibition Hall', desc:'Students have crafted stunning handmade Vesak lanterns of every shape — stars, lotus flowers, dharma wheels, and more. Walk through the corridor of light.', img:'', imgEmoji:'🪔' },
-  { id:'shramadana',x:490,y:490, emoji:'🤝', color:'#4fc3f7', label:'Shramadana Zone',    tag:'Community Work',  title:'Shramadana Area',   desc:'The Shramadana zone in Sumansala grounds brings the campus together — planting Bodhi saplings, cleaning pathways, painting Vesak decorations.', img:'', imgEmoji:'🤝' },
-  { id:'temple',   x:245, y:374, emoji:'🙏', color:'#ff6eb4', label:'Campus Temple',      tag:'Sacred Space',    title:'Campus Temple',     desc:'The serene campus temple is adorned with jasmine garlands and hundreds of flickering oil lamps. A peaceful sanctuary for prayer during the Vesak night.', img:'', imgEmoji:'🙏' },
-];
-
-// ══════════════════════════════════════════════════════════
-//  STATE
-// ══════════════════════════════════════════════════════════
-let myId       = null;
-let myName     = '';
-let myGender   = null;
-let myAvatar   = null;  // { id, emoji, name, color }
+let myId = null, myName = '', myAvatar = null, myGender = null;
 let charX = 340, charY = 620;
 const SPEED = 3.5;
-const CHAR_R = 10;
+const COLLISION_ZONES = [];
+const CHAR_R = 10; // collision radius
+let gameOn = false;
+const others = {};  // id -> {el, name, emoji, color}
 const keys = {};
-let gameRunning = false;
-const otherPlayers = {}; // id -> { name, emoji, color, x, y, el }
 
-// ══════════════════════════════════════════════════════════
-//  LOGIN UI
-// ══════════════════════════════════════════════════════════
+// Collision detection
+function collidesWithBuildings(nx, ny) {
+  for (const z of COLLISION_ZONES) {
+    if (nx + CHAR_R > z.x && nx - CHAR_R < z.x + z.w &&
+        ny + CHAR_R > z.y && ny - CHAR_R < z.y + z.h) return true;
+  }
+  return false;
+}
+
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+// ============================================================
+//  LOGIN UI LOGIC
+// ============================================================
 function selectGender(g) {
   myGender = g;
-  document.getElementById('btn-male').className   = 'gender-btn' + (g==='male'   ? ' active-male'   : '');
-  document.getElementById('btn-female').className = 'gender-btn' + (g==='female' ? ' active-female' : '');
-  renderAvatarGrid();
+  document.getElementById('btn-m').className = 'gender-btn' + (g === 'male' ? ' sel-m' : '');
+  document.getElementById('btn-f').className = 'gender-btn' + (g === 'female' ? ' sel-f' : '');
+  renderAvatars();
   checkReady();
 }
 
-function renderAvatarGrid() {
-  const grid = document.getElementById('avatar-grid');
+function renderAvatars() {
+  const grid = document.getElementById('av-grid');
   grid.innerHTML = '';
   if (!myGender) return;
   AVATARS[myGender].forEach(av => {
     const d = document.createElement('div');
-    d.className = 'avatar-opt' + (myAvatar?.id === av.id ? ' selected' : '');
-    d.innerHTML = `<span style="font-size:1.8rem">${av.emoji}</span><span class="av-name">${av.name}</span>`;
-    d.onclick = () => { myAvatar = av; renderAvatarGrid(); checkReady(); };
+    d.className = 'av-opt' + (myAvatar?.id === av.id ? ' sel' : '');
+    d.innerHTML = `<span style="font-size:1.6rem">${av.emoji}</span><span class="av-n">${av.name}</span>`;
+    d.onclick = () => {
+      myAvatar = av;
+      renderAvatars();
+      checkReady();
+    };
     grid.appendChild(d);
   });
 }
 
 function checkReady() {
-  const name = document.getElementById('lc-name').value.trim();
-  document.getElementById('enter-btn').disabled = !(name && myGender && myAvatar);
+  const n = document.getElementById('lc-name').value.trim();
+  document.getElementById('enter-btn').disabled = !(n && myGender && myAvatar);
 }
+
 document.getElementById('lc-name').addEventListener('input', checkReady);
 
-async function enterMap() {
-  const name = document.getElementById('lc-name').value.trim();
-  if (!name || !myGender || !myAvatar) return;
-  myName = name;
-  myId = 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2,7);
+function enterMap() {
+  const n = document.getElementById('lc-name').value.trim();
+  if (!n || !myGender || !myAvatar) return;
+  myName = n;
+  myId = 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
 
-  // Hide login, show map
   document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('main-header').style.display  = 'flex';
-  document.getElementById('ticker').style.display        = 'flex';
-  document.getElementById('map-wrap').style.display      = 'block';
-  document.getElementById('controls-hint').style.display = 'flex';
-  document.getElementById('players-panel').style.display = 'block';
-  document.getElementById('dpad').style.display          = 'grid';
-  document.getElementById('my-badge').textContent        = myAvatar.emoji + ' ' + myName;
+  document.getElementById('main-hdr').style.display = 'flex';
+  document.getElementById('ticker').style.display = 'flex';
+  document.getElementById('map-wrap').style.display = 'block';
+  document.getElementById('ctrl-hint').style.display = 'flex';
+  document.getElementById('dpad').style.display = 'block';
+  document.getElementById('pp').style.display = 'block';
+  document.getElementById('my-badge').textContent = myAvatar.emoji + ' ' + myName;
 
-  buildMapDOM();
-  drawMap();
-
-  // Create my token
-  createPlayerToken(myId, myName, myAvatar.emoji, myAvatar.color, charX, charY, true);
-
-  // Save my presence to shared storage
-  await saveMyPosition();
-
-  gameRunning = true;
+  spawnMe();
+  startFirebase();
+  gameOn = true;
   loop();
-  pollOthers();
-
-  // Cleanup on leave
-  window.addEventListener('beforeunload', removeMe);
 }
 
-async function removeMe() {
-  if (!myId) return;
-  try { await window.storage.delete('player:' + myId, true); } catch(e){}
-}
+// ============================================================
+//  FIREBASE REALTIME MULTIPLAYER
+// ============================================================
+function startFirebase() {
+  if (!window._FB) { console.warn('Firebase not ready'); return; }
+  const { db, ref, set, onValue, remove, onDisconnect } = window._FB;
 
-// ══════════════════════════════════════════════════════════
-//  SHARED STORAGE — MULTIPLAYER
-// ══════════════════════════════════════════════════════════
-async function saveMyPosition() {
-  if (!myId) return;
-  try {
-    await window.storage.set('player:' + myId, JSON.stringify({
-      id: myId, name: myName,
-      emoji: myAvatar.emoji, color: myAvatar.color,
-      x: charX, y: charY,
-      ts: Date.now()
-    }), true);
-  } catch(e) {}
-}
+  const myRef = ref(db, 'players/' + myId);
 
-let lastSaveTime = 0;
-async function pollOthers() {
-  if (!gameRunning) return;
-  try {
-    const result = await window.storage.list('player:', true);
-    if (result && result.keys) {
-      const now = Date.now();
-      const activeIds = new Set();
+  // Auto-remove when tab closes
+  onDisconnect(myRef).remove();
 
-      for (const key of result.keys) {
-        try {
-          const rec = await window.storage.get(key, true);
-          if (!rec) continue;
-          const p = JSON.parse(rec.value);
-          // Ignore stale (> 12 seconds = left page)
-          if (now - p.ts > 12000) continue;
-          if (p.id === myId) continue;
-          activeIds.add(p.id);
-          if (!otherPlayers[p.id]) {
-            createPlayerToken(p.id, p.name, p.emoji, p.color, p.x, p.y, false);
-          } else {
-            movePlayerToken(p.id, p.x, p.y);
-          }
-          otherPlayers[p.id].name  = p.name;
-          otherPlayers[p.id].emoji = p.emoji;
-        } catch(e) {}
+  // Push my initial position
+  pushPos(myRef);
+
+  // Listen to ALL players
+  onValue(ref(db, 'players'), snap => {
+    const data = snap.val() || {};
+    const activeIds = new Set(Object.keys(data));
+
+    // Add / update others
+    Object.entries(data).forEach(([id, p]) => {
+      if (id === myId) return;
+      if (!others[id]) {
+        spawnOther(id, p);
+      } else {
+        moveOther(id, p.x, p.y);
       }
+    });
 
-      // Remove players who left
-      for (const id of Object.keys(otherPlayers)) {
-        if (!activeIds.has(id)) removePlayerToken(id);
-      }
+    // Remove disconnected
+    Object.keys(others).forEach(id => {
+      if (!activeIds.has(id)) removeOther(id);
+    });
 
-      updatePlayersPanel();
-    }
-  } catch(e) {}
+    updatePanel(Object.values(data));
+  });
 
-  setTimeout(pollOthers, 1000);
+  // Save position on move (throttled in loop)
+  window._pushPos = () => pushPos(myRef);
 }
 
-// ══════════════════════════════════════════════════════════
-//  PLAYER TOKENS
-// ══════════════════════════════════════════════════════════
-const mapWrap = document.getElementById('map-wrap');
+function pushPos(myRef) {
+  if (!window._FB || !myId) return;
+  const { set } = window._FB;
+  set(myRef, {
+    id: myId, name: myName,
+    emoji: myAvatar.emoji, color: myAvatar.color,
+    x: Math.round(charX), y: Math.round(charY),
+    ts: Date.now()
+  }).catch(() => { });
+}
 
-function pct(v, total) { return (v / total * 100).toFixed(3) + '%'; }
+// ============================================================
+//  MULTI-PLAYER TOKENS
+// ============================================================
+function ha(hex, a) {
+  if (!hex || !hex.startsWith('#')) return `rgba(245,200,66,${a})`;
+  const r = parseInt(hex.slice(1, 3), 16),
+        g = parseInt(hex.slice(3, 5), 16),
+        b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r},${g},${b},${a})`;
+}
 
-function createPlayerToken(id, name, emoji, color, x, y, isMe) {
+function makeToken(id, name, emoji, color, x, y, isMe) {
   const div = document.createElement('div');
   div.className = 'player-token' + (isMe ? ' is-me' : '');
   div.id = 'tok-' + id;
   div.style.left = pct(x, MAP_W);
-  div.style.top  = pct(y, MAP_H);
-
-  const glowColor = color || '#f5c842';
+  div.style.top = pct(y, MAP_H);
+  const gc = color || '#f5c842';
   div.innerHTML = `
-    <div class="token-glow" style="background:radial-gradient(circle,${hexA(glowColor,0.3)} 0%,transparent 70%)"></div>
-    <svg class="token-svg" viewBox="0 0 32 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="16" cy="16" r="14" fill="${hexA(glowColor,0.1)}" stroke="${hexA(glowColor,0.35)}" stroke-width="1"/>
-      <text x="16" y="22" text-anchor="middle" font-size="18">${emoji}</text>
-    </svg>
-    <div class="token-name">${isMe ? '★ ' : ''}${name}</div>`;
-
+    <div class="tok-wrap">
+      <div class="tok-glow" style="background:radial-gradient(circle,${ha(gc, .35)} 0%,transparent 70%)"></div>
+      <div class="tok-emoji">${emoji}</div>
+    </div>
+    <div class="tok-name">${isMe ? '★ ' : ''}${name}</div>`;
   mapWrap.appendChild(div);
+  return div;
+}
 
-  if (isMe) {
-    // store reference
-  } else {
-    otherPlayers[id] = { el: div, name, emoji, color, x, y };
+function spawnMe() {
+  makeToken(myId, myName, myAvatar.emoji, myAvatar.color, charX, charY, true);
+}
+
+function spawnOther(id, p) {
+  const el = makeToken(id, p.name, p.emoji, p.color, p.x, p.y, false);
+  others[id] = { el, name: p.name, emoji: p.emoji, color: p.color };
+}
+
+function moveOther(id, x, y) {
+  if (!others[id]) return;
+  others[id].el.style.left = pct(x, MAP_W);
+  others[id].el.style.top = pct(y, MAP_H);
+}
+
+function removeOther(id) {
+  if (others[id]?.el) others[id].el.remove();
+  delete others[id];
+}
+
+function updatePanel(players) {
+  const rest = players.filter(p => p.id !== myId);
+  const total = players.length;
+  document.getElementById('online-count').textContent = total + (total === 1 ? ' online' : ' online');
+  document.getElementById('pp-list').innerHTML =
+    `<div class="pp-row"><div class="pp-dot" style="background:${myAvatar?.color || '#f5c842'}"></div><span>${myAvatar?.emoji || '🪔'} ${myName} (You)</span></div>`
+    + rest.map(p => `<div class="pp-row"><div class="pp-dot" style="background:${p.color || '#aaa'}"></div><span>${p.emoji || '🙂'} ${p.name}</span></div>`).join('');
+}
+
+// ============================================================
+//  MOVEMENT & INPUT
+// ============================================================
+document.addEventListener('keydown', e => {
+  keys[e.key] = true;
+  if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) e.preventDefault();
+});
+document.addEventListener('keyup', e => { keys[e.key] = false; });
+
+// D-Pad buttons interaction
+document.querySelectorAll('.db').forEach(btn => {
+  const d = btn.dataset.dir;
+  btn.addEventListener('pointerdown', () => { keys[d] = true;  });
+  btn.addEventListener('pointerup',   () => { keys[d] = false; });
+  btn.addEventListener('pointerleave',() => { keys[d] = false; });
+});
+
+let tick = 0;
+function updateChar() {
+  if (!gameOn) return;
+  let nx = charX, ny = charY, moved = false;
+  if (keys['ArrowUp']    || keys['up'])    { ny -= SPEED; moved = true; }
+  if (keys['ArrowDown']  || keys['down'])  { ny += SPEED; moved = true; }
+  if (keys['ArrowLeft']  || keys['left'])  { nx -= SPEED; moved = true; }
+  if (keys['ArrowRight'] || keys['right']) { nx += SPEED; moved = true; }
+
+  nx = clamp(nx, 10, MAP_W - 10);
+  ny = clamp(ny, 10, MAP_H - 10);
+
+  if (!collidesWithBuildings(nx, charY)) charX = nx;
+  if (!collidesWithBuildings(charX, ny)) charY = ny;
+
+  const t = document.getElementById('tok-' + myId);
+  if (t) {
+    t.style.left = pct(charX, MAP_W);
+    t.style.top  = pct(charY, MAP_H);
+  }
+
+  if (moved) {
+    tick++;
+    if (tick % 18 === 0 && window._pushPos) window._pushPos();
   }
 }
 
-function movePlayerToken(id, x, y) {
-  const p = otherPlayers[id];
-  if (!p) return;
-  p.x = x; p.y = y;
-  p.el.style.left = pct(x, MAP_W);
-  p.el.style.top  = pct(y, MAP_H);
-}
-
-function removePlayerToken(id) {
-  const p = otherPlayers[id];
-  if (p && p.el) p.el.remove();
-  delete otherPlayers[id];
-}
-
-function updatePlayersPanel() {
-  const list = document.getElementById('pp-list');
-  const onlineCount = document.getElementById('online-count');
-  const others = Object.values(otherPlayers);
-  const total = others.length + 1;
-  onlineCount.textContent = total + (total === 1 ? ' online' : ' online');
-
-  list.innerHTML = `<div class="pp-row"><div class="pp-dot" style="background:${myAvatar?.color||'#f5c842'}"></div><span>${myAvatar?.emoji||'🪔'} ${myName} (You)</span></div>`
-    + others.map(p => `<div class="pp-row"><div class="pp-dot" style="background:${p.color||'#aaa'}"></div><span>${p.emoji} ${p.name}</span></div>`).join('');
-}
-
-function hexA(hex, a) {
-  if (!hex || !hex.startsWith('#')) return `rgba(245,200,66,${a})`;
-  const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
-  return `rgba(${r},${g},${b},${a})`;
-}
-
-// ══════════════════════════════════════════════════════════
-//  BUILD MAP DOM (decorations)
-// ══════════════════════════════════════════════════════════
-function buildMapDOM() {
-  STREET_LIGHTS.forEach(([x,y,type]) => {
-    const el = document.createElement('div');
-    el.className = `street-light ${type}`;
-    el.style.left = pct(x,MAP_W); el.style.top = pct(y,MAP_H);
-    mapWrap.appendChild(el);
-  });
-  LANTERNS.forEach(([x,y,color]) => {
-    const el = document.createElement('div');
-    el.className = 'lantern';
-    el.style.left = pct(x,MAP_W); el.style.top = pct(y,MAP_H);
-    el.innerHTML = `<svg viewBox="0 0 22 28" fill="none"><line x1="11" y1="0" x2="11" y2="5" stroke="rgba(255,255,255,0.4)" stroke-width="1"/><ellipse cx="11" cy="7" rx="5" ry="2.5" fill="${color}" opacity="0.9"/><path d="M6 7 Q4 15 6 21 Q11 24 16 21 Q18 15 16 7Z" fill="${color}" opacity="0.85"/><ellipse cx="11" cy="21" rx="5" ry="2" fill="${color}" opacity="0.9"/><ellipse cx="11" cy="14" rx="3.5" ry="4" fill="rgba(255,255,255,0.18)"/></svg>`;
-    mapWrap.appendChild(el);
-  });
-  PAHANS.forEach(([x,y]) => {
-    const el = document.createElement('div');
-    el.className = 'pahan';
-    el.style.left = pct(x,MAP_W); el.style.top = pct(y,MAP_H);
-    mapWrap.appendChild(el);
-  });
-  POIS.forEach(poi => {
-    const el = document.createElement('div');
-    el.className = 'poi-marker';
-    el.id = 'poi-' + poi.id;
-    el.style.left = pct(poi.x,MAP_W); el.style.top = pct(poi.y,MAP_H);
-    el.innerHTML = `<div class="poi-inner" style="background:radial-gradient(circle,${hexA(poi.color,0.25)} 0%,${hexA(poi.color,0.05)} 100%);border:1.5px solid ${hexA(poi.color,0.6)}">${poi.emoji}</div><div class="poi-label">${poi.label}</div>`;
-    el.addEventListener('click', () => openModal(poi));
-    mapWrap.appendChild(el);
-  });
-}
-
-// ══════════════════════════════════════════════════════════
-//  DRAW CANVAS MAP
-// ══════════════════════════════════════════════════════════
-function drawMap() {
-  const canvas = document.getElementById('map-canvas');
-  canvas.width = MAP_W; canvas.height = MAP_H;
-  const ctx = canvas.getContext('2d');
-
-  const bg = ctx.createLinearGradient(0,0,MAP_W,MAP_H);
-  bg.addColorStop(0,'#050f20'); bg.addColorStop(1,'#040c18');
-  ctx.fillStyle = bg; ctx.fillRect(0,0,MAP_W,MAP_H);
-
-  ctx.strokeStyle='rgba(30,60,100,0.18)'; ctx.lineWidth=1;
-  for(let x=0;x<MAP_W;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,MAP_H);ctx.stroke()}
-  for(let y=0;y<MAP_H;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(MAP_W,y);ctx.stroke()}
-
-  ROADS.forEach(r => {
-    ctx.fillStyle='rgba(30,60,120,0.18)'; ctx.fillRect(r.x-8,r.y-8,r.w+16,r.h+16);
-    ctx.fillStyle='#1a2a4a'; ctx.fillRect(r.x,r.y,r.w,r.h);
-    ctx.strokeStyle='rgba(80,130,220,0.25)'; ctx.lineWidth=1; ctx.strokeRect(r.x,r.y,r.w,r.h);
-    if(r.w>100||r.h>100){
-      ctx.setLineDash([12,10]); ctx.strokeStyle='rgba(245,200,66,0.12)'; ctx.lineWidth=1.5;
-      if(r.w>r.h){const cy=r.y+r.h/2;ctx.beginPath();ctx.moveTo(r.x,cy);ctx.lineTo(r.x+r.w,cy);ctx.stroke()}
-      else{const cx=r.x+r.w/2;ctx.beginPath();ctx.moveTo(cx,r.y);ctx.lineTo(cx,r.y+r.h);ctx.stroke()}
-      ctx.setLineDash([]);
-    }
-  });
-
-  BUILDINGS.forEach(b => {
-    ctx.fillStyle='rgba(0,0,0,0.4)'; ctx.fillRect(b.x+4,b.y+4,b.w,b.h);
-    const grad=ctx.createLinearGradient(b.x,b.y,b.x+b.w,b.y+b.h);
-    grad.addColorStop(0,b.color); grad.addColorStop(1,b.color+'aa');
-    ctx.fillStyle=grad; ctx.beginPath(); ctx.roundRect(b.x,b.y,b.w,b.h,6); ctx.fill();
-    ctx.strokeStyle='rgba(60,120,210,0.35)'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.roundRect(b.x,b.y,b.w,b.h,6); ctx.stroke();
-    ctx.fillStyle='rgba(150,210,255,0.15)';
-    for(let wx=b.x+14;wx<b.x+b.w-10;wx+=20){for(let wy=b.y+14;wy<b.y+b.h-10;wy+=20){ctx.fillRect(wx,wy,8,5)}}
-  });
-
-  // Diagonal road
-  ctx.strokeStyle='rgba(50,100,180,0.3)'; ctx.lineWidth=28; ctx.lineCap='round'; ctx.setLineDash([20,8]);
-  ctx.beginPath(); ctx.moveTo(200,660); ctx.lineTo(390,560); ctx.stroke();
-  ctx.setLineDash([]); ctx.lineWidth=1;
-
-  // Labels
-  ctx.textAlign='center'; ctx.textBaseline='middle';
-  const bldLabels=[
-    {x:245,y:156,t:"KASE"},{x:245,y:265,t:"Open Canteen"},{x:245,y:374,t:"Temple"},
-    {x:580,y:191,t:"Faculty of Computing"},{x:580,y:505,t:"Sumansala"},{x:40,y:33,t:"Post Grad"},
-  ];
-  bldLabels.forEach(l=>{ctx.font='bold 11px Lato,sans-serif';ctx.fillStyle='rgba(160,200,255,0.55)';ctx.fillText(l.t,l.x,l.y)});
-
-  const sideLabels=[{text:"MANSIYLEN",x:58,y:350,a:-Math.PI/2},{text:"LIBRARY",x:58,y:520,a:-Math.PI/2},{text:"APPLIED →",x:860,y:350,a:-Math.PI/2}];
-  sideLabels.forEach(sl=>{ctx.save();ctx.translate(sl.x,sl.y);ctx.rotate(sl.a);ctx.fillStyle='rgba(140,180,240,0.5)';ctx.font='bold 10px Lato';ctx.fillText(sl.text,0,0);ctx.restore()});
-
-  const topLabels=[{text:"Post Grad",x:40,y:40},{text:"Faculty of Computing",x:300,y:40},{text:"Faculty of Humanity",x:500,y:40},{text:"Reshels Canteen",x:730,y:40}];
-  ctx.font='10px Lato';
-  topLabels.forEach(tl=>{ctx.fillStyle='rgba(180,210,255,0.45)';ctx.fillText(tl.text,tl.x,tl.y);ctx.fillStyle='rgba(245,200,66,0.5)';ctx.beginPath();ctx.arc(tl.x,tl.y+14,3,0,Math.PI*2);ctx.fill()});
-
-  ctx.font='bold 10px Lato'; ctx.fillStyle='rgba(160,200,255,0.5)';
-  ctx.fillText("Main Entrance",340,685); ctx.fillText("Entrance 2",170,685); ctx.fillText("Junction",395,560);
-  ctx.fillStyle='rgba(245,200,66,0.4)'; ctx.font='18px sans-serif';
-  ctx.fillText("↑",340,670); ctx.fillText("↑",170,670);
-}
-
-// ══════════════════════════════════════════════════════════
-//  MOVEMENT
-// ══════════════════════════════════════════════════════════
-function collidesWithBuildings(nx,ny) {
-  for(const z of COLLISION_ZONES){if(nx+CHAR_R>z.x&&nx-CHAR_R<z.x+z.w&&ny+CHAR_R>z.y&&ny-CHAR_R<z.y+z.h)return true}
-  return false;
-}
-function clamp(v,lo,hi){return Math.max(lo,Math.min(hi,v))}
-
-document.addEventListener('keydown',e=>{keys[e.key]=true;if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key))e.preventDefault()});
-document.addEventListener('keyup',e=>{keys[e.key]=false});
-document.querySelectorAll('.dpad-btn').forEach(btn=>{
-  const dir=btn.dataset.dir;
-  btn.addEventListener('pointerdown',()=>{keys[dir]=true});
-  btn.addEventListener('pointerup',  ()=>{keys[dir]=false});
-  btn.addEventListener('pointerleave',()=>{keys[dir]=false});
-});
-
-let moveTick = 0;
-function updateChar() {
-  if(!gameRunning) return;
-  let nx=charX, ny=charY, moved=false;
-  if(keys['ArrowUp']||keys['up'])   {ny-=SPEED;moved=true}
-  if(keys['ArrowDown']||keys['down']){ny+=SPEED;moved=true}
-  if(keys['ArrowLeft']||keys['left']){nx-=SPEED;moved=true}
-  if(keys['ArrowRight']||keys['right']){nx+=SPEED;moved=true}
-
-  nx=clamp(nx,10,MAP_W-10); ny=clamp(ny,10,MAP_H-10);
-  if(!collidesWithBuildings(nx,charY)) charX=nx;
-  if(!collidesWithBuildings(charX,ny)) charY=ny;
-
-  const myTok = document.getElementById('tok-'+myId);
-  if(myTok){ myTok.style.left=pct(charX,MAP_W); myTok.style.top=pct(charY,MAP_H); }
-
-  // Save every ~20 frames if moved
-  if(moved){ moveTick++; if(moveTick%20===0) saveMyPosition(); }
-}
-
-// ══════════════════════════════════════════════════════════
-//  MODAL
-// ══════════════════════════════════════════════════════════
-const overlay=document.getElementById('modal-overlay');
-document.getElementById('modal-close').addEventListener('click',()=>overlay.classList.remove('active'));
-overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.classList.remove('active')});
+// ============================================================
+//  MODAL SYSTEM
+// ============================================================
+const overlay  = document.getElementById('modal-overlay');
+const mTitle   = document.getElementById('modal-title');
+const mDesc    = document.getElementById('modal-desc');
+const mTag     = document.getElementById('modal-tag');
+const mEmoji   = document.getElementById('modal-emoji');
+const mImg     = document.getElementById('modal-img');
+const mClose   = document.getElementById('modal-close');
 
 function openModal(poi) {
-  document.getElementById('modal-tag').textContent   = poi.tag;
-  document.getElementById('modal-title').textContent = poi.title;
-  document.getElementById('modal-desc').textContent  = poi.desc;
-  document.getElementById('modal-emoji').textContent = poi.imgEmoji;
-  const img = document.getElementById('modal-img');
-  if(poi.img){img.src=poi.img;img.style.display='block';document.getElementById('modal-emoji').style.display='none'}
-  else{img.style.display='none';document.getElementById('modal-emoji').style.display='flex'}
+  mTag.textContent   = poi.tag;
+  mTitle.textContent = poi.title;
+  mDesc.textContent  = poi.desc;
+  mEmoji.textContent = poi.imgEmoji;
+  if (poi.img) {
+    mImg.src = poi.img;
+    mImg.style.display = 'block';
+    mEmoji.style.display = 'none';
+  } else {
+    mImg.style.display = 'none';
+    mEmoji.style.display = 'flex';
+  }
   overlay.classList.add('active');
 }
 
-// ══════════════════════════════════════════════════════════
+mClose.addEventListener('click', () => overlay.classList.remove('active'));
+overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('active'); });
+
+// ============================================================
+//  CLEANUP ON LEAVE
+// ============================================================
+window.addEventListener('beforeunload', () => {
+  if (!window._FB || !myId) return;
+  const { db, ref, remove } = window._FB;
+  remove(ref(db, 'players/' + myId));
+});
+
+// ============================================================
 //  GAME LOOP
-// ══════════════════════════════════════════════════════════
+// ============================================================
 function loop() {
   updateChar();
   requestAnimationFrame(loop);
