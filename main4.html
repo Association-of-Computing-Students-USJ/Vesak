@@ -2134,7 +2134,7 @@
                     if (!others[id]) {
                         spawnOther(id, p);
                     } else {
-                        moveOther(id, p.x, p.y);
+                        moveOther(id, p);
                     }
                 });
 
@@ -2274,11 +2274,17 @@
 
         // Override local updateChar to handle multiplayer tokens and firebase throttle
         const originalUpdateChar = updateChar;
+        let wasMoving = false;
         updateChar = function () {
             let ox = charX, oy = charY;
             originalUpdateChar();
-            if (ox !== charX || oy !== charY) {
+            const currentlyMoving = (ox !== charX || oy !== charY);
+            if (currentlyMoving) {
                 updateCharMultiplayer(charX, charY);
+                wasMoving = true;
+            } else if (wasMoving) {
+                if (window._pushPos) window._pushPos();
+                wasMoving = false;
             }
         };
 
