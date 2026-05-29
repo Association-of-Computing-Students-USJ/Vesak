@@ -1014,7 +1014,11 @@
             border-radius: 6px;
             overflow: visible;
             transform: scale(0.85) translateY(30px);
-            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.3s ease;
+        }
+
+        #modal-box.thorana-mode {
+            width: min(820px, 95vw);
         }
 
         #modal-overlay.active #modal-box {
@@ -1060,6 +1064,11 @@
             position: relative;
             border-radius: 4px 4px 0 0;
             background: linear-gradient(135deg, #0a1e40, #1a0a30);
+            transition: height 0.3s ease;
+        }
+
+        #modal-box.thorana-mode #modal-img-wrap {
+            height: 490px;
         }
 
         #modal-img-wrap img {
@@ -2011,11 +2020,12 @@
             <!-- Image + name overlay only -->
             <div id="modal-img-wrap">
                 <img id="modal-img" src="" alt="">
-                <div class="img-overlay"></div>
+                <video id="modal-video" style="display:none; width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; z-index:2;" playsinline></video>
+                <div class="img-overlay" style="z-index:3;"></div>
                 <div class="img-emoji" id="modal-emoji"></div>
 
                 <!-- Name bar overlaid on image -->
-                <div id="modal-name-bar">
+                <div id="modal-name-bar" style="z-index:4;">
                     <div class="mnb-ornament">
                         <div class="mnb-line"></div>
                         <span>🪔</span>
@@ -2055,15 +2065,15 @@
         const BUILDINGS = [];
 
         const POIS = [
-            { id: "pandol", x: 260, y: 150, emoji: "🌳", color: "#f5c842", label: "KASE", tag: "KASE Center", title: "KASE Center", desc: "The beautiful KASE center grounds are decorated with traditional palm leaves, oil lamps, and a majestic glowing Bodhi tree at the heart.", img: "images/kase.jpg", imgEmoji: "🌳" },
+            { id: "pandol", x: 260, y: 150, emoji: "🌳", color: "#f5c842", label: "KASE", tag: "KASE Center", title: "KASE", desc: "The beautiful KASE center grounds are decorated with traditional palm leaves, oil lamps, and a majestic glowing Bodhi tree at the heart.", img: "images/kase.jpg", imgEmoji: "🌳" },
             { id: "dansala", x: 260, y: 250, emoji: "🍚", color: "#69f0ae", label: "Open Canteen", tag: "Dana / Charity", title: "Open Canteen", desc: "A spirit of generosity fills the Open Canteen area as the Vesak Dansala serves free traditional Sri Lankan meals.", img: "", imgEmoji: "🍚" },
             { id: "lanterns", x: 490, y: 200, emoji: "🏢", color: "#ce93d8", label: "Rathanasara Building", tag: "Faculty", title: "Rathanasara Building", desc: "Students from the Faculty of Computing have crafted stunning handmade Vesak lanterns.", img: "images/ratna.jpg", imgEmoji: "🪔" },
             { id: "shramadana", x: 490, y: 490, emoji: "🤝", color: "#4fc3f7", label: "Sumangala Building", tag: "Faculty", title: "Sumangala Building", desc: "The Shramadana zone brings the campus together.", img: "images/sumagala.jpg", imgEmoji: "🤝" },
             { id: "temple", x: 245, y: 400, emoji: "🙏", color: "#ff6eb4", label: "Temple", tag: "Sacred Space", title: "Temple", desc: "The serene campus temple adorned with jasmine garlands and flickering oil lamps.", img: "images/temple.jpg", imgEmoji: "🙏" },
             { id: "library", x: 40, y: 520, emoji: "📚", color: "#4fc3f7", label: "Library", tag: "Library", title: "Library", desc: "The campus library adorned with beautiful paper stars and hanging lotus lanterns.", img: "images/library.jpg", imgEmoji: "📚" },
             { id: "applied", x: 785, y: 370, emoji: "🔬", color: "#ff6eb4", label: "Faculty of Computing", tag: "Faculty", title: "Faculty of Computing", desc: "The department entrance is lit up with colorful traditional Vesak decorations.", img: "", imgEmoji: "🔬" },
-            { id: "postgrad", x: 95, y: 40, emoji: "🎓", color: "#aed581", label: "Faculty of Post", tag: "Faculty", title: "Post Graduate Center", desc: "The postgraduate building looks serene under a canopy of warm lights.", img: "images/post.jpg", imgEmoji: "🎓" },
-            { id: "humanity", x: 420, y: 40, emoji: "🎨", color: "#ff8a65", label: "Humanities Faculty", tag: "Faculty", title: "Faculty of Humanities", desc: "Beautiful traditional Vesak drawings and handmade decorations.", img: "", imgEmoji: "🎨" },
+            { id: "postgrad", x: 95, y: 40, emoji: "🎓", color: "#aed581", label: "Faculty of postgraduate studies", tag: "Faculty", title: "Faculty of postgraduate studies", desc: "The postgraduate building looks serene under a canopy of warm lights.", img: "images/post.jpg", imgEmoji: "🎓" },
+            { id: "humanity", x: 420, y: 40, emoji: "🎨", color: "#ff8a65", label: "Faculty of Humanities and Social Sciences", tag: "Faculty", title: "Faculty of Humanities and Social Sciences", desc: "Beautiful traditional Vesak drawings and handmade decorations.", img: "", imgEmoji: "🎨" },
             { id: "reshels", x: 665, y: 40, emoji: "☕", color: "#ffb347", label: "Rahula Canteen", tag: "Canteen", title: "Rahula Canteen", desc: "Serving warm traditional herbal drinks and sweetmeats.", img: "", imgEmoji: "☕" },
             { id: "mgt_faculty_1", x: 40, y: 390, emoji: "🏛️", color: "#ffb347", label: "Management Faculty", tag: "Faculty", title: "Management Faculty Building", desc: "Decorated with beautiful paper lanterns and warm glow.", img: "images/managment olf.jpg", imgEmoji: "🏛️" },
             { id: "mgt_faculty_2", x: 40, y: 211, emoji: "🏢", color: "#4fc3f7", label: "New Mgmt Building", tag: "Faculty", title: "New Management Building", desc: "Illuminated with modern lights and traditional decorations.", img: "images/management new.jpg", imgEmoji: "🏢" },
@@ -2368,26 +2378,101 @@
         //  MODAL
         // ============================================================
         const overlay = document.getElementById('modal-overlay');
+        const mBox = document.getElementById('modal-box');
         const mTitle = document.getElementById('modal-title');
         const mEmoji = document.getElementById('modal-emoji');
         const mImg = document.getElementById('modal-img');
         const mClose = document.getElementById('modal-close');
+        let narrationAudio = null;
+        let thoranaTimeout = null;
 
         function openModal(poi) {
             mTitle.textContent = poi.title;
             mEmoji.textContent = poi.imgEmoji;
 
-            // Use explicit img path or fall back to poi.id + '.jpg'
-            const imgSrc = poi.img || (poi.id + ".jpg");
-            mImg.src = imgSrc;
-            mImg.style.display = 'block';
-            mEmoji.style.display = 'none';
+            const mVideo = document.getElementById('modal-video');
+
+            if (poi.id === "foc_thorana") {
+                // Large cinematic layout for Thorana video
+                if (mBox) mBox.classList.add('thorana-mode');
+
+                // Hide image/emoji and show video
+                mImg.style.display = 'none';
+                mEmoji.style.display = 'none';
+
+                if (mVideo) {
+                    mVideo.src = 'videos/Sequence 01_2.mp4';
+                    mVideo.style.display = 'block';
+                    mVideo.currentTime = 0;
+                    mVideo.loop = true; // Loop the video
+                    mVideo.play().catch(err => console.warn("Video playback blocked or failed:", err));
+                }
+
+                // Stop background music
+                stopMusic();
+
+                // Play narration audio
+                if (!narrationAudio) {
+                    narrationAudio = new Audio('audio/voice.mp3');
+                }
+                narrationAudio.currentTime = 0;
+                narrationAudio.loop = true; // Loop narration audio as well to match video looping
+                narrationAudio.play().catch(err => console.warn("Narration audio playback blocked or failed:", err));
+
+                // Auto-close after 3 minutes 10 seconds (190,000 milliseconds)
+                if (thoranaTimeout) clearTimeout(thoranaTimeout);
+                thoranaTimeout = setTimeout(() => {
+                    closeModal();
+                }, 190000);
+            } else {
+                // Regular POI - standard layout
+                if (mBox) mBox.classList.remove('thorana-mode');
+
+                // Hide video
+                if (mVideo) {
+                    mVideo.style.display = 'none';
+                    mVideo.pause();
+                    mVideo.src = '';
+                }
+
+                // Use explicit img path or fall back to poi.id + '.jpg'
+                const imgSrc = poi.img || (poi.id + ".jpg");
+                mImg.src = imgSrc;
+                mImg.style.display = 'block';
+                mEmoji.style.display = 'none';
+            }
 
             overlay.classList.add('active');
         }
 
-        mClose.addEventListener('click', () => overlay.classList.remove('active'));
-        overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('active'); });
+        function closeModal() {
+            overlay.classList.remove('active');
+            if (mBox) mBox.classList.remove('thorana-mode');
+
+            // Clear the auto-close timer if manual close is triggered
+            if (thoranaTimeout) {
+                clearTimeout(thoranaTimeout);
+                thoranaTimeout = null;
+            }
+
+            const mVideo = document.getElementById('modal-video');
+            if (mVideo) {
+                mVideo.pause();
+                mVideo.style.display = 'none';
+                mVideo.src = '';
+            }
+
+            if (narrationAudio) {
+                narrationAudio.pause();
+                narrationAudio.currentTime = 0;
+            }
+
+            // Resume background music automatically
+            playMusic();
+        }
+
+        mClose.addEventListener('click', closeModal);
+        overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
 
         // ============================================================
         //  FEATURE 5: TOAST NOTIFICATIONS
