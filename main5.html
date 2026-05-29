@@ -1007,7 +1007,7 @@
 
         #modal-box {
             position: relative;
-            width: min(480px, 93vw);
+            width: min(680px, 95vw);
             background: rgba(4, 12, 32, 0.93);
             backdrop-filter: blur(26px);
             -webkit-backdrop-filter: blur(26px);
@@ -1018,7 +1018,7 @@
         }
 
         #modal-box.thorana-mode {
-            width: min(820px, 95vw);
+            width: min(850px, 95vw);
         }
 
         #modal-overlay.active #modal-box {
@@ -1059,7 +1059,7 @@
         /* Vesak image area */
         #modal-img-wrap {
             width: 100%;
-            height: 360px;
+            height: 440px;
             overflow: hidden;
             position: relative;
             border-radius: 4px 4px 0 0;
@@ -1068,7 +1068,7 @@
         }
 
         #modal-box.thorana-mode #modal-img-wrap {
-            height: 490px;
+            height: 520px;
         }
 
         #modal-img-wrap img {
@@ -2066,24 +2066,24 @@
 
         const POIS = [
             { id: "pandol", x: 260, y: 150, emoji: "🌳", color: "#f5c842", label: "KASE", tag: "KASE Center", title: "KASE", desc: "The beautiful KASE center grounds are decorated with traditional palm leaves, oil lamps, and a majestic glowing Bodhi tree at the heart.", img: "images/kase.jpg", imgEmoji: "🌳" },
-            { id: "dansala", x: 260, y: 250, emoji: "🍚", color: "#69f0ae", label: "Open Canteen", tag: "Dana / Charity", title: "Open Canteen", desc: "A spirit of generosity fills the Open Canteen area as the Vesak Dansala serves free traditional Sri Lankan meals.", img: "", imgEmoji: "🍚" },
+            { id: "dansala", x: 260, y: 250, emoji: "🍚", color: "#69f0ae", label: "Open Canteen", tag: "Dana / Charity", title: "Open Canteen", desc: "A spirit of generosity fills the Open Canteen area as the Vesak Dansala serves free traditional Sri Lankan meals.", img: "images/open.jpg", imgEmoji: "🍚" },
             { id: "lanterns", x: 490, y: 200, emoji: "🏢", color: "#ce93d8", label: "Rathanasara Building", tag: "Faculty", title: "Rathanasara Building", desc: "Students from the Faculty of Computing have crafted stunning handmade Vesak lanterns.", img: "images/ratna.jpg", imgEmoji: "🪔" },
             { id: "shramadana", x: 490, y: 490, emoji: "🤝", color: "#4fc3f7", label: "Sumangala Building", tag: "Faculty", title: "Sumangala Building", desc: "The Shramadana zone brings the campus together.", img: "images/sumagala.jpg", imgEmoji: "🤝" },
             { id: "temple", x: 245, y: 400, emoji: "🙏", color: "#ff6eb4", label: "Temple", tag: "Sacred Space", title: "Temple", desc: "The serene campus temple adorned with jasmine garlands and flickering oil lamps.", img: "images/temple.jpg", imgEmoji: "🙏" },
             { id: "library", x: 40, y: 520, emoji: "📚", color: "#4fc3f7", label: "Library", tag: "Library", title: "Library", desc: "The campus library adorned with beautiful paper stars and hanging lotus lanterns.", img: "images/library.jpg", imgEmoji: "📚" },
-            { id: "applied", x: 785, y: 370, emoji: "🔬", color: "#ff6eb4", label: "Faculty of Computing", tag: "Faculty", title: "Faculty of Computing", desc: "The department entrance is lit up with colorful traditional Vesak decorations.", img: "", imgEmoji: "🔬" },
+            { id: "applied", x: 785, y: 370, emoji: "🔬", color: "#ff6eb4", label: "Faculty of Computing", tag: "Faculty", title: "Faculty of Computing", desc: "The department entrance is lit up with colorful traditional Vesak decorations.", img: "images/foc.jpg", imgEmoji: "🔬" },
             { id: "postgrad", x: 95, y: 40, emoji: "🎓", color: "#aed581", label: "Faculty of postgraduate studies", tag: "Faculty", title: "Faculty of postgraduate studies", desc: "The postgraduate building looks serene under a canopy of warm lights.", img: "images/post.jpg", imgEmoji: "🎓" },
-            { id: "humanity", x: 420, y: 40, emoji: "🎨", color: "#ff8a65", label: "Faculty of Humanities and Social Sciences", tag: "Faculty", title: "Faculty of Humanities and Social Sciences", desc: "Beautiful traditional Vesak drawings and handmade decorations.", img: "", imgEmoji: "🎨" },
-            { id: "reshels", x: 665, y: 40, emoji: "☕", color: "#ffb347", label: "Rahula Canteen", tag: "Canteen", title: "Rahula Canteen", desc: "Serving warm traditional herbal drinks and sweetmeats.", img: "", imgEmoji: "☕" },
+            { id: "humanity", x: 420, y: 40, emoji: "🎨", color: "#ff8a65", label: "Faculty of Humanities and Social Sciences", tag: "Faculty", title: "Faculty of Humanities and Social Sciences", desc: "Beautiful traditional Vesak drawings and handmade decorations.", img: "images/arts.jpg", imgEmoji: "🎨" },
+            { id: "reshels", x: 665, y: 40, emoji: "☕", color: "#ffb347", label: "Rahula Canteen", tag: "Canteen", title: "Rahula Canteen", desc: "Serving warm traditional herbal drinks and sweetmeats.", img: "images/rahula.jpg", imgEmoji: "☕" },
             { id: "mgt_faculty_1", x: 40, y: 390, emoji: "🏛️", color: "#ffb347", label: "Management Faculty", tag: "Faculty", title: "Management Faculty Building", desc: "Decorated with beautiful paper lanterns and warm glow.", img: "images/managment olf.jpg", imgEmoji: "🏛️" },
             { id: "mgt_faculty_2", x: 40, y: 211, emoji: "🏢", color: "#4fc3f7", label: "New Mgmt Building", tag: "Faculty", title: "New Management Building", desc: "Illuminated with modern lights and traditional decorations.", img: "images/management new.jpg", imgEmoji: "🏢" },
             { id: "buddhist_flag_zone", x: 570, y: 610, emoji: "☸️", color: "#ff6eb4", label: "Buddhist Flag Display", tag: "Cultural Display", title: "Buddhist Flag Zone", desc: "A beautiful display of the six-colored Buddhist flag.", img: "images/flag.jpg", imgEmoji: "☸️" },
             { id: "entrance_2", x: 99, y: 670, emoji: "🟢", color: "#69f0ae", label: "Entrance 2", tag: "Entry Point", title: "Entrance 2", desc: "Secondary gate entrance illuminated with beautiful green lanterns.", img: "images/ENTERANCE 2.jpg", imgEmoji: "🟢" },
-            { id: "entrance_3", x: 99, y: 490, emoji: "🟢", color: "#69f0ae", label: "Traffic Junction", tag: "Entry Point", title: "Traffic Junction", desc: "Secondary gate entrance with beautiful lanterns.", img: "", imgEmoji: "🟢" },
-            { id: "entrance_4", x: 410, y: 490, emoji: "🟢", color: "#69f0ae", label: "Statue", tag: "Entry Point", title: "Ven.Hikkaduwe Sri Sumangala Thero", desc: "Historic statue and entry point.", img: "", imgEmoji: "🟢" },
+            { id: "entrance_3", x: 99, y: 490, emoji: "🟢", color: "#69f0ae", label: "Traffic Junction", tag: "Entry Point", title: "Traffic Junction", desc: "Secondary gate entrance with beautiful lanterns.", img: "images/traffic.jpg", imgEmoji: "🟢" },
+            { id: "entrance_4", x: 410, y: 490, emoji: "🟢", color: "#69f0ae", label: "Statue", tag: "Entry Point", title: "Ven.Hikkaduwe Sri Sumangala Thero", desc: "Historic statue and entry point.", img: "images/sortha.jpg", imgEmoji: "🟢" },
             { id: "main_entrance", x: 405, y: 670, emoji: "🟢", color: "#69f0ae", label: "Main Entrance", tag: "Entry Point", title: "Main Entrance", desc: "The grand Main Entrance adorned with massive glowing pandols.", img: "images/main entrenace.jpg", imgEmoji: "🟢" },
             { id: "center_point", x: 250, y: 595, emoji: "✨", color: "#ffd54f", label: "Mal Para", tag: "Main Spot", title: "Mal Para", desc: "The central gathering point with beautiful lights and decorations.", img: "images/malpara.jpg", imgEmoji: "✨" },
-            { id: "applied_sci_faculty", x: 800, y: 90, emoji: "🔬", color: "#4fc3f7", label: "Faculty of Applied Science", tag: "Faculty", title: "Faculty of Applied Science", desc: "The pristine department building lit for the festival.", img: "", imgEmoji: "🔬" },
+            { id: "applied_sci_faculty", x: 800, y: 90, emoji: "🔬", color: "#4fc3f7", label: "Faculty of Applied Science", tag: "Faculty", title: "Faculty of Applied Science", desc: "The pristine department building lit for the festival.", img: "images/applied.jpg", imgEmoji: "🔬" },
             { id: "ahala_wala_theater", x: 840, y: 540, emoji: "🎭", color: "#ff6eb4", label: "Ahala Wala", tag: "Theater / Arts", title: "Ahala Wala", desc: "The legendary Open Theater hosting traditional dramas under the stars.", img: "images/ahla waa.jpg", imgEmoji: "🎭" },
             { id: "foc_thorana", x: 590, y: 325, emoji: "🏮", color: "#f5c842", label: "FOC Thorana", tag: "Thorana / Pandol", title: "FOC Thorana", desc: "The majestic Faculty of Computing Vesak Pandol glowing brilliantly.", img: "", imgEmoji: "🏮" },
         ];
